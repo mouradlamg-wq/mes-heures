@@ -33,7 +33,7 @@ export function Reglages({
   readonly reglageVise?: string | undefined
   readonly onRetour: () => void
 }): React.JSX.Element {
-  const { repo, settings } = useDonnees()
+  const { repo, settings, modeSaisieHeure } = useDonnees()
   const cible = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -157,6 +157,36 @@ export function Reglages({
             modifier({ tauxHoraireBaseCents: valeur })
           }}
         />
+      </Section>
+
+      <hr className="hr-section" />
+
+      <Section titre="Saisie">
+        <div className="field">
+          <span className="field-label">Comment tu tapes tes heures</span>
+          <div className="seg">
+            {(['clavier', 'selecteur'] as const).map((mode) => (
+              <button
+                key={mode}
+                type="button"
+                aria-pressed={modeSaisieHeure === mode}
+                onClick={() => {
+                  void repo.ecrireModeSaisieHeure(mode)
+                }}
+              >
+                {mode === 'clavier' ? 'Clavier' : 'Sélecteur'}
+              </button>
+            ))}
+          </div>
+          <span className="field-consequence">
+            {modeSaisieHeure === 'clavier'
+              ? 'Quatre chiffres au clavier numérique : « 0540 » devient 05:40. Le plus rapide le soir, à une main.'
+              : 'Le sélecteur d’heure de ton téléphone. Plus lent, mais impossible de se tromper de chiffre.'}
+          </span>
+          <span className="field-consequence">
+            Ce choix reste sur cet appareil : il ne part pas dans la sauvegarde.
+          </span>
+        </div>
       </Section>
 
       <hr className="hr-section" />

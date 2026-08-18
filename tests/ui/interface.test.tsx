@@ -196,14 +196,76 @@ describe('INT — saisie', () => {
     expect((champ as HTMLInputElement).value).toBe('151:40')
   })
 
-  it('INT-09 — aucun sélecteur d’heure à faire défiler', () => {
-    render(<ChampHeure label="Prise" valeur="05:40" onChange={vi.fn()} />)
+  it('INT-09 — mode clavier : aucun sélecteur, quatre chiffres au pavé numérique', () => {
+    render(<ChampHeure label="Prise" valeur="05:40" mode="clavier" onChange={vi.fn()} />)
 
     const champ = screen.getByLabelText('Prise')
     expect(champ.getAttribute('inputmode')).toBe('numeric')
     expect(champ.getAttribute('type')).toBe('text')
     expect(document.querySelector('select')).toBeNull()
     expect(document.querySelector('input[type="time"]')).toBeNull()
+  })
+
+  it('INT-09 — le clavier est le mode par défaut', () => {
+    render(<ChampHeure label="Prise" valeur="05:40" onChange={vi.fn()} />)
+
+    expect(screen.getByLabelText('Prise').getAttribute('type')).toBe('text')
+  })
+
+  it('INT-19 — mode sélecteur : le champ natif du téléphone', () => {
+    render(<ChampHeure label="Prise" valeur="05:40" mode="selecteur" onChange={vi.fn()} />)
+
+    const champ = screen.getByLabelText<HTMLInputElement>('Prise')
+    expect(champ.getAttribute('type')).toBe('time')
+    expect(champ.value).toBe('05:40')
+  })
+
+  it('INT-20 — les deux modes produisent la même chaîne HH:mm', () => {
+    const auClavier = vi.fn()
+    const { unmount } = render(
+      <ChampHeure label="Prise" valeur={undefined} mode="clavier" onChange={auClavier} />,
+    )
+    fireEvent.change(screen.getByLabelText('Prise'), { target: { value: '0540' } })
+    unmount()
+
+    const auSelecteur = vi.fn()
+    render(<ChampHeure label="Prise" valeur={undefined} mode="selecteur" onChange={auSelecteur} />)
+    fireEvent.change(screen.getByLabelText('Prise'), { target: { value: '05:40' } })
+
+    // Même sortie, donc une seule résolution en instant en aval — et un seul
+    // endroit où la nuit du changement d'heure est traitée.
+    expect(auClavier).toHaveBeenLastCalledWith('05:40')
+    expect(auSelecteur).toHaveBeenLastCalledWith('05:40')
+  })
+
+  it('INT-20 — vider le champ produit undefined dans les deux modes', () => {
+    const auClavier = vi.fn()
+    const { unmount } = render(
+      <ChampHeure label="Prise" valeur="05:40" mode="clavier" onChange={auClavier} />,
+    )
+    fireEvent.change(screen.getByLabelText('Prise'), { target: { value: '' } })
+    unmount()
+
+    const auSelecteur = vi.fn()
+    render(<ChampHeure label="Prise" valeur="05:40" mode="selecteur" onChange={auSelecteur} />)
+    fireEvent.change(screen.getByLabelText('Prise'), { target: { value: '' } })
+
+    expect(auClavier).toHaveBeenLastCalledWith(undefined)
+    expect(auSelecteur).toHaveBeenLastCalledWith(undefined)
+  })
+
+  it('INT-20 — un refus métier reste affiché quel que soit le mode', () => {
+    const refus = "Cette heure n'existe pas cette nuit-là."
+    const { unmount } = render(
+      <ChampHeure label="Prise" valeur="02:30" mode="clavier" refus={refus} onChange={vi.fn()} />,
+    )
+    expect(screen.getByRole('alert').textContent).toBe(refus)
+    unmount()
+
+    render(
+      <ChampHeure label="Prise" valeur="02:30" mode="selecteur" refus={refus} onChange={vi.fn()} />,
+    )
+    expect(screen.getByRole('alert').textContent).toBe(refus)
   })
 })
 

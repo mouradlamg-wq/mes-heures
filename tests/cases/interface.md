@@ -17,7 +17,7 @@ notations, et qu'une zone non qualifiée reste atteignable en un appui.
 | INT-06 | Statut affiché en toutes lettres | `CERTAIN` / `PARTIEL` / `INCALCULABLE`, jamais une icône seule |
 | INT-07 | Saisie d'une heure : quatre chiffres | les deux points s'écrivent seuls, `0540` → `05:40` |
 | INT-08 | Saisie d'une heure hors plage (`25:00`) | refus en une phrase sous le champ, **aucune correction** |
-| INT-09 | Aucun sélecteur d'heure à faire défiler | les champs d'heure sont `inputmode="numeric"`, jamais un `<select>` ni un `type="time"` |
+| INT-09 | Mode `clavier` (défaut) | champ `inputmode="numeric"`, jamais un `<select>` ni un `type="time"` |
 | INT-10 | La liste de la journée montre les zones **du moteur** | deux coupures qui se suivent forment une seule ligne, la qualification manuelle y prend sa place |
 | INT-11 | Une zone non qualifiée est une ligne à part | signalée, hachurée, et cliquable sur toute sa largeur |
 | INT-12 | Un segment sans borne reste visible | listé en fin de journée, éditable, sans durée inventée |
@@ -27,3 +27,6 @@ notations, et qu'une zone non qualifiée reste atteignable en un appui.
 | INT-16 | Saisie d'une durée de référence, chiffre par chiffre | **chaque frappe est visible**, y compris les deux premières qui ne forment pas encore une durée lisible ; la valeur n'est enregistrée qu'à partir de trois chiffres |
 | INT-17 | La saisie en cours est relue à l'écran | `15140` → « se lit 151 h 40, soit 151,67 h sur ta fiche » — les centièmes servent à comparer avec la fiche de paie |
 | INT-18 | Sortie du champ de durée | l'affichage reprend la forme canonique `151:40` |
+| INT-19 | Mode `selecteur` | champ `type="time"`, le sélecteur natif du téléphone |
+| INT-20 | Les deux modes produisent le **même** contrat | une chaîne `HH:mm` : la résolution en instant, le changement d'heure et les refus restent au même endroit |
+| INT-21 | Le mode de saisie est une préférence **de l'appareil** | stocké dans `meta`, absent de `Settings` et donc du fichier d'export |

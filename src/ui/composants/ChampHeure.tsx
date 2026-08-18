@@ -1,14 +1,19 @@
 import { useState } from 'react'
 import { validerHeureHorloge } from '../../engine'
+import type { ModeSaisieHeure } from '../../db'
 
 /**
- * Saisie d'une heure au clavier numérique du système. **Aucun sélecteur à faire
- * défiler** (DESIGN §8, §14) : on tape quatre chiffres, les deux points
- * s'écrivent tout seuls.
+ * Saisie d'une heure. **Deux modes, au choix de l'utilisateur** (réglage
+ * « Comment tu tapes tes heures ») :
  *
- * Le composant ne connaît ni fuseau ni date : il produit une chaîne `HH:mm` et
- * laisse l'appelant la résoudre en instant. C'est ce qui garde la résolution DST
- * en un seul endroit.
+ * - `clavier` — quatre chiffres au pavé numérique, les deux points s'écrivent
+ *   seuls. Le plus rapide, et le seul qui tienne la cible des quinze secondes ;
+ * - `selecteur` — le sélecteur natif du téléphone (`input type="time"`), avec
+ *   son cadran ou ses molettes selon l'appareil.
+ *
+ * Les deux produisent **exactement la même chose** : une chaîne `HH:mm`. La
+ * résolution en instant, la gestion du changement d'heure et les refus restent
+ * donc au même endroit, quel que soit le mode.
  */
 export function ChampHeure({
   valeur,
@@ -16,6 +21,7 @@ export function ChampHeure({
   onChange,
   refus,
   taille = 'grand',
+  mode = 'clavier',
 }: {
   readonly valeur: string | undefined
   readonly label: string
@@ -23,7 +29,43 @@ export function ChampHeure({
   /** Phrase de refus venant du moteur (heure inexistante, par exemple). */
   readonly refus?: string
   readonly taille?: 'grand' | 'normal'
+  readonly mode?: ModeSaisieHeure
 }): React.JSX.Element {
+  return mode === 'selecteur' ? (
+    <SaisieSelecteur
+      valeur={valeur}
+      label={label}
+      onChange={onChange}
+      taille={taille}
+      {...(refus === undefined ? {} : { refus })}
+    />
+  ) : (
+    <SaisieClavier
+      valeur={valeur}
+      label={label}
+      onChange={onChange}
+      taille={taille}
+      {...(refus === undefined ? {} : { refus })}
+    />
+  )
+}
+
+type ProprietesSaisie = {
+  readonly valeur: string | undefined
+  readonly label: string
+  readonly onChange: (heure: string | undefined) => void
+  readonly refus?: string
+  readonly taille: 'grand' | 'normal'
+}
+
+/** Quatre chiffres au clavier numérique. Aucun défilement. */
+function SaisieClavier({
+  valeur,
+  label,
+  onChange,
+  refus,
+  taille,
+}: ProprietesSaisie): React.JSX.Element {
   const [saisie, setSaisie] = useState(() => valeur ?? '')
   const [valeurPrecedente, setValeurPrecedente] = useState(valeur)
 
@@ -87,6 +129,47 @@ export function ChampHeure({
   )
 }
 
+/**
+ * Sélecteur natif du téléphone. Il ne peut pas produire d'heure hors plage — le
+ * navigateur s'en charge — mais il peut renvoyer une chaîne vide si
+ * l'utilisateur efface, et il reste soumis aux mêmes refus métier (une heure qui
+ * n'existe pas la nuit du changement d'heure).
+ */
+function SaisieSelecteur({
+  valeur,
+  label,
+  onChange,
+  refus,
+  taille,
+}: ProprietesSaisie): React.JSX.Element {
+  return (
+    <label className="bloc-horaire__champ">
+      <span className="legende">{label}</span>
+      <input
+        className={[
+          taille === 'grand' ? 'heure-saisie heure-saisie--selecteur' : 'input',
+          refus !== undefined ? 'heure-saisie--invalide' : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+        type="time"
+        aria-label={label}
+        aria-invalid={refus !== undefined}
+        value={valeur ?? ''}
+        onChange={(evenement) => {
+          const brut = evenement.target.value
+          onChange(brut === '' ? undefined : brut)
+        }}
+      />
+      {refus !== undefined ? (
+        <span className="refus-saisie" role="alert">
+          {refus}
+        </span>
+      ) : null}
+    </label>
+  )
+}
+
 /** `0540` → `05:40`. Les deux points ne se tapent pas. */
 function formater(brut: string): string {
   const chiffres = brut.replace(/\D/g, '').slice(0, 4)
@@ -95,4 +178,3 @@ function formater(brut: string): string {
   }
   return `${chiffres.slice(0, 2)}:${chiffres.slice(2)}`
 }
-

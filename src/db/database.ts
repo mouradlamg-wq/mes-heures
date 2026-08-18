@@ -32,7 +32,19 @@ export type MetaRow = {
 export const CLES_META = {
   DERNIER_EXPORT: 'dernierExport',
   STOCKAGE_PERSISTANT: 'stockagePersistant',
+  MODE_SAISIE_HEURE: 'modeSaisieHeure',
 } as const
+
+/**
+ * Comment l'utilisateur préfère taper une heure.
+ *
+ * C'est une préférence **de cet appareil**, pas une règle métier : elle vit dans
+ * `meta` et non dans `Settings`, donc elle ne part pas dans l'export. Le clavier
+ * d'un téléphone n'est pas celui d'une tablette.
+ */
+export type ModeSaisieHeure = 'clavier' | 'selecteur'
+
+export const MODE_SAISIE_PAR_DEFAUT: ModeSaisieHeure = 'clavier'
 
 export class BaseMesHeures extends Dexie {
   declare settings: EntityTable<SettingsRow, 'id'>

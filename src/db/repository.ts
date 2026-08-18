@@ -8,7 +8,14 @@ import type {
   Settings,
   WorkDay,
 } from '../engine'
-import { BaseMesHeures, CLES_META, ID_SETTINGS, type SettingsRow } from './database'
+import {
+  BaseMesHeures,
+  CLES_META,
+  ID_SETTINGS,
+  MODE_SAISIE_PAR_DEFAUT,
+  type ModeSaisieHeure,
+  type SettingsRow,
+} from './database'
 
 /**
  * Accès aux données. La couche au-dessus (UI) ne parle jamais à Dexie
@@ -161,6 +168,19 @@ export class Repository {
       cle: CLES_META.STOCKAGE_PERSISTANT,
       valeur: accorde ? 'accorde' : 'refuse',
     })
+  }
+
+  /**
+   * Mode de saisie des heures. Préférence locale à l'appareil : elle ne fait
+   * pas partie des réglages métier et ne part pas dans l'export.
+   */
+  async lireModeSaisieHeure(): Promise<ModeSaisieHeure> {
+    const ligne = await this.base.meta.get(CLES_META.MODE_SAISIE_HEURE)
+    return ligne?.valeur === 'selecteur' ? 'selecteur' : MODE_SAISIE_PAR_DEFAUT
+  }
+
+  async ecrireModeSaisieHeure(mode: ModeSaisieHeure): Promise<void> {
+    await this.base.meta.put({ cle: CLES_META.MODE_SAISIE_HEURE, valeur: mode })
   }
 
   async stockagePersistant(): Promise<'accorde' | 'refuse' | undefined> {

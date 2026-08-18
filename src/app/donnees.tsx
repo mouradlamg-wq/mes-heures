@@ -1,7 +1,13 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { DateTime } from 'luxon'
-import { BaseMesHeures, Repository, settingsParDefaut, demanderStockagePersistant } from '../db'
+import {
+  BaseMesHeures,
+  MODE_SAISIE_PAR_DEFAUT,
+  Repository,
+  settingsParDefaut,
+  demanderStockagePersistant,
+} from '../db'
 import { ContexteDonnees, type Donnees } from './contexteDonnees'
 
 /**
@@ -48,6 +54,11 @@ export function FournisseurDonnees({
   }, [])
 
   const settings = useLiveQuery(async () => repository.lireSettings(), [], undefined)
+  const modeSaisieHeure = useLiveQuery(
+    async () => repository.lireModeSaisieHeure(),
+    [],
+    MODE_SAISIE_PAR_DEFAUT,
+  )
 
   if (!pret || settings === undefined) {
     return (
@@ -67,6 +78,7 @@ export function FournisseurDonnees({
     zone,
     aujourdhui: maintenant.toISODate() ?? '',
     maintenantMillis: maintenant.toMillis(),
+    modeSaisieHeure,
   }
 
   return <ContexteDonnees.Provider value={donnees}>{children}</ContexteDonnees.Provider>

@@ -18,6 +18,7 @@ import {
   type ZoneIndeterminee,
 } from '../../engine'
 import { nouvelId, useDonnees } from '../../app/contexteDonnees'
+import type { ModeSaisieHeure } from '../../db'
 import { libelleDate, libelleType } from '../libelles'
 import { plage, rangees, segmentSous } from './rangees'
 import { ChampHeure } from '../composants/ChampHeure'
@@ -38,7 +39,7 @@ export function Aujourdhui({
 }: {
   readonly onOuvrirReglages: (reglage?: string) => void
 }): React.JSX.Element {
-  const { repo, settings, zone, aujourdhui } = useDonnees()
+  const { repo, settings, zone, aujourdhui, modeSaisieHeure } = useDonnees()
   const [date, setDate] = useState<ISODate>(aujourdhui)
 
   const jour = useLiveQuery(async () => repo.lireJourneeDuJour(date), [date], undefined)
@@ -221,6 +222,7 @@ export function Aujourdhui({
               ? undefined
               : heureMuraleDe(jourOuVide.priseService, zone)
           }
+          mode={modeSaisieHeure}
           onChange={majPrise}
           {...(refus['prise'] === undefined ? {} : { refus: refus['prise'] })}
         />
@@ -232,6 +234,7 @@ export function Aujourdhui({
               ? undefined
               : heureMuraleDe(jourOuVide.finService, zone)
           }
+          mode={modeSaisieHeure}
           onChange={majFin}
           {...(refus['fin'] === undefined ? {} : { refus: refus['fin'] })}
         />
@@ -395,6 +398,7 @@ export function Aujourdhui({
         <EditeurSegment
           segment={jourOuVide.segments.find((s) => s.id === segmentEnEdition)}
           zone={zone}
+          mode={modeSaisieHeure}
           refus={refus}
           onChangerType={(type) => {
             majSegment(segmentEnEdition, { type })
@@ -476,6 +480,7 @@ type Ambiguite = {
 function EditeurSegment({
   segment,
   zone,
+  mode,
   refus,
   onChangerType,
   onChangerHeure,
@@ -484,6 +489,7 @@ function EditeurSegment({
 }: {
   readonly segment: Segment | undefined
   readonly zone: string
+  readonly mode: ModeSaisieHeure
   readonly refus: Record<string, string>
   readonly onChangerType: (type: TypeSegment) => void
   readonly onChangerHeure: (bord: 'debut' | 'fin', heure: string | undefined) => void
@@ -502,6 +508,7 @@ function EditeurSegment({
         <div className="bloc-horaire">
           <ChampHeure
             label="Début"
+            mode={mode}
             valeur={segment.debut === undefined ? undefined : heureMuraleDe(segment.debut, zone)}
             onChange={(heure) => {
               onChangerHeure('debut', heure)
@@ -513,6 +520,7 @@ function EditeurSegment({
           <div className="bloc-horaire__separateur" aria-hidden="true" />
           <ChampHeure
             label="Fin"
+            mode={mode}
             valeur={segment.fin === undefined ? undefined : heureMuraleDe(segment.fin, zone)}
             onChange={(heure) => {
               onChangerHeure('fin', heure)

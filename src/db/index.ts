@@ -1,9 +1,10 @@
-export type { SettingsRow, MetaRow } from './database'
+export type { SettingsRow, MetaRow, ModeSaisieHeure } from './database'
 export {
   BaseMesHeures,
   ID_SETTINGS,
   CLES_META,
   VERSION_SCHEMA,
+  MODE_SAISIE_PAR_DEFAUT,
   settingsParDefaut,
 } from './database'
 export { Repository } from './repository'

@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react'
-import type { BaseMesHeures, Repository } from '../db'
+import type { BaseMesHeures, ModeSaisieHeure, Repository } from '../db'
 import type { ISODate, Settings } from '../engine'
 
 /**
@@ -17,6 +17,8 @@ export type Donnees = {
   readonly aujourdhui: ISODate
   /** Instant courant : le moteur ne lit jamais l'horloge, on la lui passe. */
   readonly maintenantMillis: number
+  /** Préférence locale de saisie des heures : clavier ou sélecteur natif. */
+  readonly modeSaisieHeure: ModeSaisieHeure
 }
 
 export const ContexteDonnees = createContext<Donnees | undefined>(undefined)

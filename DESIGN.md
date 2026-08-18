@@ -102,7 +102,7 @@ Interdit : afficher `0` ou `—` pour un `unknown`, désactiver un champ sans di
 - **Compteur** — kicker rouge, chiffre 76 px, rangée de `.tag-neutral` dessous (centièmes, repas, indemnités). Un seul par écran, en haut.
 - **Bloc horaire** — `Prise` / séparateur vertical 2 px × 26 / `Fin`, chiffres 32 px, `Amplitude` poussée à droite en 20 px. C'est le seul endroit où trois valeurs partagent une ligne.
 - **Ligne de segment** — pastille 8 × 24 px, plage horaire 13 px (colonne fixe 96 px, tabulaire), type, durée en 800 poussée à droite, filet 1 px en bas. Pastilles : encre = conduite, `--color-neutral-300` = coupure et disponibilité, `--color-accent` = autre travail, `--color-accent` + hachure = non qualifié.
-- **Pied de journée** — filet 2 px, « Temps rémunéré » + valeur en 22 px, puis la mention légale. **Aucun bouton de validation** : la saisie est enregistrée à chaque frappe, et un bouton qui ne fait rien laisserait croire qu'une journée non « validée » n'est pas comptée.
+- **Pied de journée** — filet 2 px, « Temps rémunéré » + valeur en 22 px, la mention légale, puis le bouton primaire pleine largeur libellé à gauche.
 - **Ligne d'écart** — un libellé, son tag de statut, puis trois valeurs sur une ligne : `Toi` · `Ta fiche` (encadrée 1 px : c'est la seule valeur saisie par l'utilisateur) · `Écart` poussé à droite en 22 px. Dépliable sur ses preuves. Détaillée au §11.
 - **Dépliant de preuves** — bloc `--color-surface`, kicker rouge « Comment j'arrive à … », les `CalculationStep` numérotés en 11,5 px (le résultat de chaque étape en 800), puis la ligne de sources en 10 px sur filet 1 px, et un `.btn-secondary` vers les journées concernées.
 
@@ -117,20 +117,40 @@ Ordre vertical imposé :
 3. date + tag de statut du jour ;
 4. bloc horaire prise / fin / amplitude ;
 5. filet 2 px, liste des segments, `+ Ajouter un segment` en `.btn-ghost` à la fin de la liste ;
-6. filet 2 px, pied : temps rémunéré, puis la mention. Rien d'autre — la journée n'a pas à être validée.
+6. filet 2 px, pied : temps rémunéré, mention, `Valider la journée`.
 
 - Saisie : champs numériques (`inputmode="numeric"`, `HH:mm`), **aucun sélecteur à faire défiler**. Le clavier système est le seul clavier.
 - `Dupliquer hier` et `Modèle…` accessibles depuis une journée vide, en tête de la liste de segments, avant tout champ.
 - Cible tactile minimale 44 px de haut sur toute ligne ou bouton actionnable — une ligne de segment fait 46 px, elle est cliquable sur toute sa largeur.
 - Ambiguïté DST : dialogue `.dialog` à deux choix explicites (« avant le changement d'heure » / « après »), et seulement dans ce cas. Heure inexistante : refus en une phrase sous le champ, en encre, jamais de correction automatique.
 
-## 9. Écran « Ma semaine / Ma période »
+## 9. Écran « Ma période »
 
-- Segmented `.seg` en tête : `Semaine` / `Période`. Le libellé de période vient des réglages (« du 26 févr. au 25 mars »), jamais d'un mois déduit.
-- Corps : `.table` — une ligne par jour, colonnes `Jour` · `Amplitude` · `Conduite` · `Temps rémunéré` · statut. Filet 1 px par ligne, en-tête sur filet 2 px, chiffres tabulaires alignés à droite.
-- Une journée incomplète affiche son intervalle dans la cellule, avec le tag du statut : la ligne ne se ment pas.
-- Pied fixe : totaux de la période en 22 px, double affichage, plus la mention *« Ces durées sont indicatives. Cette version ne vérifie pas la conformité au règlement européen. »*
-- Aucune couleur de conformité, aucun feu tricolore, aucun badge de dépassement : la v1 ne qualifie rien.
+Maquette de référence : direction 1c, option `3a`. Ordre vertical imposé :
+
+1. bandeau fixe : bornes de période + `.seg` `Semaine` / `Période` (le libellé vient des réglages — « 26 févr. → 25 mars » — jamais d'un mois déduit) ;
+2. **le total de la période d'abord** — même logique que le compteur d'Aujourd'hui : chiffre 32 px en double affichage, tag de statut, décompte honnête (`19 jours certains`, `1 incalculable`) ;
+3. filet implicite (bord de table), la liste des jours — **seule zone qui défile** ;
+4. filet 2 px, pied fixe : la mention obligatoire puis `Voir l'écart avec ma fiche →` en `.btn-secondary`.
+
+### La table
+
+`.table` — colonnes `Jour` · `Amplitude` · `Conduite` · `Temps rémunéré`, chiffres tabulaires alignés à droite, cellule `Jour` en `white-space:nowrap`. Une ligne fait 38 px, filet 1 px entre les lignes.
+
+Quatre états de ligne, un traitement chacun — **jamais de `0 h 00` ou de tiret pour masquer un cas particulier** :
+
+| Cas | Rendu |
+|---|---|
+| Jour travaillé, `complete` | les trois durées, `Temps rémunéré` en 800 |
+| Repos / congé | `colspan` sur les trois colonnes, un mot en encre 50 % (« Repos », « Congé payé — non valorisé ») — jamais une ligne vide |
+| `partial` | hachure `--color-accent-100/200` sur toute la ligne, cliquable ; `Temps rémunéré` affiche l'intervalle en `--color-accent-700` + `.tag-outline` ; un appui qualifie et repasse la ligne en `complete` dans le même rendu |
+| `unknown` | `Amplitude`/`Conduite` en tiret 45 % gris (ici seulement — jamais ailleurs), `.tag-neutral` `INCALCULABLE`, et sous le tag la cause en 10 px avec `→` (« fin de service manquante ») |
+
+Le mardi 17 mars de cette table est la même journée que l'écran Aujourd'hui : ses deux états (partiel / qualifié) doivent rester synchronisés entre les deux écrans, et l'appui y qualifie sans y naviguer.
+
+### Interdits propres à cet écran
+
+Aucune couleur de conformité, aucun feu tricolore, aucun badge de dépassement : la v1 ne qualifie pas le règlement européen. Aucun total qui mélange des jours `complete` et `partial` sans le dire — le tag `PARTIEL` du total reste tant qu'un seul jour l'est.
 
 ## 10. Écran « Réglages »
 
@@ -210,6 +230,6 @@ Coin arrondi · ombre dans un écran de saisie · couleur sur un écart (favorab
 
 ## 15. À maquetter ensuite
 
-Dessinés : « Aujourd'hui » et « Vérifier ma paie ». Spécifiés mais pas encore dessinés : « Ma semaine / Ma période », « Réglages », et le relevé PDF — à faire avant la phase 6 du SPEC.
+Dessinés : « Aujourd'hui », « Vérifier ma paie », « Ma période ». Spécifiés mais pas encore dessinés : « Réglages », le détail « Ma semaine » (probablement la même table filtrée sur sept jours), et le relevé PDF — à faire avant la phase 6 du SPEC.
 
 Question ouverte, à trancher avant la phase 6 : la ligne d'écart doit-elle afficher **aussi** le montant à côté des heures supplémentaires ? Cela suppose un taux majoré dans les réglages, donc une valeur qui passera souvent en `INCALCULABLE`. En l'état, la spec ne compare que ce qui est certain.

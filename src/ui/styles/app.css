@@ -180,6 +180,27 @@
   border-bottom-color: var(--color-accent);
 }
 
+/*
+ * Mode « sélecteur » : le champ natif se dimensionne lui-même et réserve la
+ * place de son icône. On la masque — sur un téléphone, c'est le champ entier qui
+ * ouvre le sélecteur, l'icône ne sert qu'à la souris — et on rend la largeur au
+ * navigateur, sinon l'heure se retrouve tronquée à « 06:0 ».
+ */
+.heure-saisie--selecteur {
+  width: auto;
+  min-width: 0;
+  max-width: 100%;
+  padding: 0;
+}
+
+.heure-saisie--selecteur::-webkit-calendar-picker-indicator {
+  display: none;
+}
+
+.heure-saisie--selecteur::-webkit-datetime-edit {
+  padding: 0;
+}
+
 .refus-saisie {
   font-size: 11px;
   line-height: 1.4;
