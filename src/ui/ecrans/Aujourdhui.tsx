@@ -58,6 +58,7 @@ export function Aujourdhui({
   const [refus, setRefus] = useState<Record<string, string>>({})
   const [zoneAQualifier, setZoneAQualifier] = useState<ZoneIndeterminee | undefined>(undefined)
   const [segmentEnEdition, setSegmentEnEdition] = useState<string | undefined>(undefined)
+  const [typeADemander, setTypeADemander] = useState(false)
 
   const enregistrer = async (modifie: WorkDay): Promise<void> => {
     await repo.enregistrerJournee(modifie)
@@ -135,9 +136,18 @@ export function Aujourdhui({
     })
   }
 
-  const ajouterSegment = (): void => {
-    const segment: Segment = { id: nouvelId('seg'), type: 'conduite' }
+  /**
+   * Crée un segment du type choisi, sans aucune heure, et ouvre son éditeur.
+   *
+   * Le type est **demandé avant** : l'app ne suppose pas que tout commence par
+   * de la conduite, et rien n'est écrit en base tant que l'utilisateur n'a pas
+   * dit ce qu'il ajoutait.
+   */
+  const creerSegment = (type: TypeSegment): void => {
+    const segment: Segment = { id: nouvelId('seg'), type }
     void enregistrer({ ...jourOuVide, segments: [...jourOuVide.segments, segment] })
+    setTypeADemander(false)
+    setSegmentEnEdition(segment.id)
   }
 
   const majSegment = (id: string, modifie: Partial<Segment>): void => {
@@ -371,7 +381,13 @@ export function Aujourdhui({
       </ul>
 
       <div className="gouttiere">
-        <button type="button" className="btn btn-ghost" onClick={ajouterSegment}>
+        <button
+          type="button"
+          className="btn btn-ghost"
+          onClick={() => {
+            setTypeADemander(true)
+          }}
+        >
           + Ajouter un segment
         </button>
       </div>
@@ -393,6 +409,22 @@ export function Aujourdhui({
           <p className="mention">{MENTIONS.durees}</p>
         </div>
       </div>
+
+      {/* Le type est demandé avant la création : rien n'est écrit tant que
+          l'utilisateur n'a pas dit ce qu'il ajoute. */}
+      {typeADemander ? (
+        <DialogueChoix
+          titre="Tu ajoutes quoi ?"
+          texte="Choisis d'abord ce que c'était. Tu mettras les heures juste après."
+          choix={TYPES_SEGMENT.map((type) => ({ valeur: type, libelle: libelleType(type) }))}
+          onChoisir={(valeur) => {
+            creerSegment(valeur as TypeSegment)
+          }}
+          onAnnuler={() => {
+            setTypeADemander(false)
+          }}
+        />
+      ) : null}
 
       {segmentEnEdition === undefined ? null : (
         <EditeurSegment

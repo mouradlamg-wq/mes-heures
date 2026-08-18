@@ -30,3 +30,5 @@ notations, et qu'une zone non qualifiée reste atteignable en un appui.
 | INT-19 | Mode `selecteur` | champ `type="time"`, le sélecteur natif du téléphone |
 | INT-20 | Les deux modes produisent le **même** contrat | une chaîne `HH:mm` : la résolution en instant, le changement d'heure et les refus restent au même endroit |
 | INT-21 | Le mode de saisie est une préférence **de l'appareil** | stocké dans `meta`, absent de `Settings` et donc du fichier d'export |
+| INT-22 | Ajout d'un segment | l'app **ne présume aucun type** : elle demande d'abord ce qu'on ajoute, et n'écrit rien avant la réponse |
+| INT-23 | Un segment neuf n'a aucune heure | ni début, ni fin, ni durée devinée — l'utilisateur les saisit lui-même |
