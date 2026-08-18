@@ -38,7 +38,6 @@ const A_COUVRIR_PLUS_TARD: Readonly<Record<string, string>> = {
   // Phases en cours de livraison. Ces entrées disparaissent à mesure que les
   // tests sont écrits ; le test « la liste des reports ne contient pas de ligne
   // déjà couverte » interdit de les oublier ici.
-  ...reports('QUA', 1, 25, 'phase 2 — qualification'),
   ...reports('PER', 1, 24, 'phase 3 — périodes'),
   ...reports('PAI', 1, 13, 'phase 3 — temps rémunéré'),
   ...reports('PAI', 20, 39, 'phase 3 — heures supplémentaires'),
@@ -46,7 +45,6 @@ const A_COUVRIR_PLUS_TARD: Readonly<Record<string, string>> = {
   ...reports('DON', 1, 24, 'phase 4 — persistance'),
   ...report('PRV-06', 'phase 3 — balayage des résultats financiers'),
   ...report('PRV-07', 'phase 3 — idem, résultats dépendant d’un réglage'),
-  ...report('PRV-09', 'phase 2 — temps de conduite brut'),
   ...report('PRV-22', 'phase 3 — mois comportant une absence'),
 }
 

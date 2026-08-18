@@ -106,3 +106,7 @@ export type {
   WorkDay,
 } from './domain'
 export { TYPES_SEGMENT, TYPES_ABSENCE, CODES_INDEMNITES_COURANTS } from './domain'
+
+export type { JourneeQualifiee, ZoneQualifiee, ZoneIndeterminee } from './qualify/types'
+export { CODES as CODES_QUALIFICATION } from './qualify/types'
+export { qualifierJournee } from './qualify/qualifierJournee'
