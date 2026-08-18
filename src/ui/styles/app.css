@@ -324,11 +324,7 @@
 }
 
 .pied__mention {
-  padding-bottom: var(--space-3);
-}
-
-.pied__action {
-  padding-bottom: var(--space-4);
+  padding-bottom: var(--space-6);
 }
 
 /* ————————————————————————————————————————————————————————

@@ -383,13 +383,11 @@ export function Aujourdhui({
             surReglageManquant={onOuvrirReglages}
           />
         </div>
+        {/* Pas de bouton de validation : la saisie est enregistrée à chaque
+            frappe, il n'y a donc rien à valider. Un bouton qui ne fait rien
+            laisserait croire qu'une journée non « validée » n'est pas comptée. */}
         <div className="gouttiere pied__mention">
           <p className="mention">{MENTIONS.durees}</p>
-        </div>
-        <div className="gouttiere pied__action">
-          <button type="button" className="btn btn-primary">
-            Valider la journée
-          </button>
         </div>
       </div>
 

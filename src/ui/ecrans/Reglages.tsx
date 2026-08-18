@@ -335,7 +335,9 @@ function ChampMontant(proprietes: ProprietesChamp<Cents>): React.JSX.Element {
         className="input"
         type="text"
         inputMode="decimal"
-        placeholder="0,00"
+        // Jamais « 0,00 » en filigrane : un champ vide ne doit pas ressembler à
+        // un montant nul (DESIGN §14).
+        placeholder="--,--"
         value={proprietes.valeur === undefined ? '' : ecrireMontantSaisie(proprietes.valeur)}
         onChange={(evenement) => {
           proprietes.onChange(lireMontantSaisie(evenement.target.value))
@@ -354,7 +356,7 @@ function ChampFraction(proprietes: ProprietesChamp<number>): React.JSX.Element {
         className="input"
         type="text"
         inputMode="numeric"
-        placeholder="%"
+        placeholder="-- %"
         value={
           proprietes.valeur === undefined ? '' : ecrirePourcentageSaisie(proprietes.valeur)
         }
