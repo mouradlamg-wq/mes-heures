@@ -27,36 +27,15 @@ const A_COUVRIR_PLUS_TARD: Readonly<Record<string, string>> = {
   ...report('ARC-08', 'phase 7 — src/pdf n’existe pas encore'),
   ...report('ARC-09', 'phase 5 — src/ui n’existe pas encore'),
   ...report('ARC-16', 'phase 3 — contrôle des signatures publiques du moteur'),
-  ...report('DON-14', 'phase 8 — navigator.storage.persist() au bootstrap PWA'),
-  ...report('DON-15', 'phase 8 — idem'),
-  ...report('DON-16', 'phase 5 — le rappel de sauvegarde est un écran'),
-  ...report('DON-17', 'phase 5 — idem'),
   ...report('PAI-40', 'phase 7 — écran Vérifier ma paie'),
   ...report('PAI-41', 'phase 7 — idem'),
   ...report('PAI-42', 'phase 7 — idem'),
-
-  // Phases en cours de livraison. Ces entrées disparaissent à mesure que les
-  // tests sont écrits ; le test « la liste des reports ne contient pas de ligne
-  // déjà couverte » interdit de les oublier ici.
-  ...reports('DON', 1, 24, 'phase 4 — persistance'),
 }
 
 function report(id: string, raison: string): Record<string, string> {
   return { [id]: raison }
 }
 
-function reports(
-  prefixe: string,
-  premier: number,
-  dernier: number,
-  raison: string,
-): Record<string, string> {
-  const entrees: Record<string, string> = {}
-  for (let n = premier; n <= dernier; n += 1) {
-    entrees[`${prefixe}-${String(n).padStart(2, '0')}`] = raison
-  }
-  return entrees
-}
 
 async function fichiersSous(dossier: string, motif: RegExp): Promise<string[]> {
   const entrees = await readdir(dossier, { withFileTypes: true, recursive: true })

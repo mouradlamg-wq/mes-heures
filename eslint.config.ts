@@ -17,6 +17,12 @@ export default tseslint.config(
       },
     },
     rules: {
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        // Un préfixe `_` marque une valeur volontairement ignorée : le reste
+        // d'un destructuring, ou un contrôle qui n'existe qu'à la compilation.
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_', ignoreRestSiblings: true },
+      ],
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/switch-exhaustiveness-check': 'error',
       'no-console': ['error', { allow: ['warn', 'error'] }],
