@@ -14,7 +14,7 @@ qu'il ne peut pas déduire.
 | QUA-07 | Trou non qualifié — prise 06:00, `06:00–10:00`, `14:00–18:00`, fin 18:00 | `partial`, certain 8 h, non qualifié 4 h, `range` 8 h → 12 h |
 | QUA-08 | Trou en début de journée — prise 06:00, premier segment à 07:00 | trou `06:00–07:00` signalé, non inventé |
 | QUA-09 | Trou en fin de journée — dernier segment à 17:00, fin 18:00 | trou `17:00–18:00` signalé |
-| QUA-10 | Journée sans `finService` | `partial` — la borne haute est ouverte, explicitement signalée |
+| QUA-10 | Journée sans `finService` | **aucune durée n'est `complete`** : sans amplitude, la borne haute n'existe pas et répondre `0 h 00` affirmerait qu'il ne s'est rien passé. Statut `unknown`, cause nommée |
 | QUA-11 | Journée sans `priseService` mais avec des segments | `partial`, borne basse ouverte |
 | QUA-12 | Journée sans aucun segment mais avec prise et fin | amplitude `complete`, temps rémunéré `partial` avec `range` 0 → amplitude |
 | QUA-13 | Journée entièrement vide | `unknown` — rien à borner |

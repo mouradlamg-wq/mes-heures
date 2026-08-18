@@ -3,6 +3,7 @@ import {
   CODES_QUALIFICATION,
   heureMuraleDe,
   qualifierJournee,
+  TYPES_SEGMENT,
   type JourneeQualifiee,
 } from '../../src/engine'
 import {
@@ -223,6 +224,25 @@ describe('QUA — chevauchements, trous, range', () => {
     expect(q.warnings.find((w) => w.code === CODES_QUALIFICATION.FIN_ABSENTE)?.message).toContain(
       'ouverte',
     )
+
+    // Aucune durée n'est certaine : sans fin de service, la borne haute n'existe
+    // pas. Répondre « 0 h 00 » affirmerait qu'il ne s'est rien passé.
+    for (const type of TYPES_SEGMENT) {
+      expect(q.dureeParType[type].status, type).toBe('unknown')
+      expect(q.dureeParType[type].value, type).toBeUndefined()
+    }
+    expect(q.dureeParType.conduite.warnings.at(-1)?.message).toContain('amplitude')
+  })
+
+  it('QUA-10 — une journée ouverte ne déclare pas zéro heure de conduite', () => {
+    // Le cas qui a échappé au premier jet : prise saisie, aucun segment, aucune
+    // fin. Le moteur répondait « 0 h 00 certaines » sur les quatre types.
+    const ouverte = aWorkDay({ date: LUNDI, prise: '06:00' })
+    const close = aWorkDay({ date: LUNDI, prise: '06:00', fin: '06:00' })
+
+    expect(qualifierJournee(ouverte, PARIS).dureeParType.conduite.status).toBe('unknown')
+    // La même journée close à la même minute, elle, vaut bien zéro.
+    expect(qualifierJournee(close, PARIS).dureeParType.conduite.value).toBe(0)
   })
 
   it('QUA-11 — journée sans prise de service : borne basse ouverte', () => {

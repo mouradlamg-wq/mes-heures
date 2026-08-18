@@ -71,6 +71,10 @@
   --color-text: #16130f;
   --color-divider: #cbc5be;
 
+  /* Encre posée sur un aplat d'accent. Elle ne change pas en thème sombre :
+     l'aplat, lui, reste l'accent pur. */
+  --color-sur-accent: #ffffff;
+
   /* Encres atténuées — exprimées en tokens pour qu'aucun composant n'écrive
      une opacité à la main. */
   --color-text-55: color-mix(in srgb, var(--color-text) 55%, transparent);
@@ -268,7 +272,7 @@ button {
 
 .btn-primary {
   background: var(--color-accent);
-  color: #fff;
+  color: var(--color-sur-accent);
   font-weight: 800;
   width: 100%;
 }

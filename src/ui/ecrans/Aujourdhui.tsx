@@ -35,12 +35,15 @@ import { CompteurDuMois } from './CompteurDuMois'
  * moteur (CLAUDE.md §4).
  */
 export function Aujourdhui({
+  dateInitiale,
   onOuvrirReglages,
 }: {
+  /** Journée à ouvrir : renseignée quand on arrive depuis le tableau de période. */
+  readonly dateInitiale?: ISODate
   readonly onOuvrirReglages: (reglage?: string) => void
 }): React.JSX.Element {
   const { repo, settings, zone, aujourdhui, modeSaisieHeure } = useDonnees()
-  const [date, setDate] = useState<ISODate>(aujourdhui)
+  const [date, setDate] = useState<ISODate>(dateInitiale ?? aujourdhui)
 
   const jour = useLiveQuery(async () => repo.lireJourneeDuJour(date), [date], undefined)
   const veille = useLiveQuery(

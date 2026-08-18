@@ -3,7 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#ec3013" />
+
+    <!-- La barre système prend le fond de l'app, pas la couleur de marque :
+         un bandeau rouge au-dessus d'un écran crème se verrait comme une erreur. -->
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#f2efec" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#131211" />
+
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <!-- iOS ignore `maskable` et applique son propre arrondi : il lui faut une
+         icône opaque, sans coin transparent. -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
     <title>Mes Heures</title>
   </head>
   <body>

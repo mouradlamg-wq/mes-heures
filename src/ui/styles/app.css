@@ -450,3 +450,117 @@
 .liste-indemnite__montant {
   font-weight: 800;
 }
+
+/* ————————————————————————————————————————————————————————
+ * Écran « Ma semaine / Ma période » (DESIGN §9)
+ * ———————————————————————————————————————————————————————— */
+
+.periode-entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-top: var(--space-3);
+  padding-bottom: var(--space-3);
+}
+
+.periode-entete__titre {
+  font-size: 17px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  /* Les bornes tiennent sur une ligne : coupées, elles se lisent comme deux
+     dates sans rapport. */
+  white-space: nowrap;
+}
+
+/*
+ * Segmenté à aplat rouge. Réservé au sélecteur Semaine / Période : c'est le
+ * seul aplat d'accent de cet écran, et le DESIGN §13 en interdit deux sur un
+ * même écran. Ailleurs, le segmenté actif reste en encre.
+ */
+.seg--accent > button[aria-pressed='true'] {
+  background: var(--color-accent);
+  color: var(--color-sur-accent);
+}
+
+/* Le total de période est plus long qu'un compteur d'heures sup : il descend
+   d'un cran pour qu'un intervalle tienne sur une ligne. */
+.compteur__valeur--total {
+  font-size: 40px;
+  line-height: 1.05;
+  margin-bottom: var(--space-1);
+}
+
+.compteur__centiemes {
+  font-size: 15px;
+  color: var(--color-text-55);
+  margin: 0 0 var(--space-3);
+}
+
+/* Quatre colonnes sur 390 px : le tableau descend d'un cran en taille pour
+   qu'un intervalle tienne sans se couper en deux. */
+.table-jours {
+  font-size: 13px;
+}
+
+.table-jours thead th {
+  font-size: 9px;
+  white-space: nowrap;
+}
+
+.table-jours th[scope='row'] {
+  font-weight: 400;
+  text-align: left;
+  border-bottom: var(--filet-ligne) solid var(--color-divider);
+  padding: var(--space-3) 0;
+  white-space: nowrap;
+}
+
+.table-jours td {
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+/* Sauf la cellule qui porte une cause : elle, c'est une phrase. */
+.table-jours td:has(.ligne-jour__phrase) {
+  white-space: normal;
+}
+
+.ligne-jour--travail {
+  cursor: pointer;
+}
+
+/* Un jour sans travail ne porte aucun chiffre : le mot suffit. */
+.ligne-jour__mot {
+  text-align: right;
+  font-weight: 400;
+  color: var(--color-text-55);
+}
+
+.ligne-jour--partielle th[scope='row'],
+.ligne-jour--partielle td {
+  color: var(--color-accent-kicker);
+}
+
+/* Une cellule qui porte une cause tient sur deux lignes : la valeur, puis le
+   statut ou la phrase qui l'explique. */
+.ligne-jour__cause {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-1);
+}
+
+.ligne-jour__phrase {
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--color-text-55);
+  text-align: right;
+  max-width: 18ch;
+}
+
+.btn-pleine {
+  width: 100%;
+}

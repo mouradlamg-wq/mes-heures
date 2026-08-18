@@ -94,7 +94,17 @@ export function qualifierJournee(
     amplitude,
     zones,
     zonesIndeterminees,
-    dureeParType: dureesParType(zones, tempsIndetermine, jour.id, journeeVide, warnings),
+    // Une journée dont l'amplitude est inconnue n'est pas bornable : ni prise,
+    // ni fin, ni les deux. On ne peut donc rien dire de ses durées — pas même
+    // « zéro ».
+    dureeParType: dureesParType(
+      zones,
+      tempsIndetermine,
+      jour.id,
+      amplitude.status !== 'complete',
+      amplitude.warnings.at(-1),
+      warnings,
+    ),
     tempsIndetermine,
     warnings,
     complete:
@@ -407,18 +417,28 @@ function dureesParType(
   zones: readonly ZoneQualifiee[],
   tempsIndetermine: Minutes,
   dayId: string,
-  journeeVide: boolean,
+  amplitudeInconnue: boolean,
+  causeAmplitude: CalculationWarning | undefined,
   warnings: readonly CalculationWarning[],
 ): Readonly<Record<TypeSegment, CalculationResult<Minutes>>> {
   const entrees = TYPES_SEGMENT.map((type) => {
-    if (journeeVide) {
+    /**
+     * Journée non close : il manque une prise, une fin, ou les deux. Sans
+     * amplitude, la borne haute n'existe pas — répondre `0 h 00` reviendrait à
+     * affirmer qu'il ne s'est rien passé, alors qu'on l'ignore. Le SPEC §0 est
+     * explicite : mieux vaut « je ne peux pas calculer ça ».
+     */
+    if (amplitudeInconnue) {
       return [
         type,
-        unknown<Minutes>({
-          code: CODES.JOURNEE_VIDE,
-          message: "Cette journée ne contient aucune saisie : il n'y a rien à borner.",
-          dayId,
-        }),
+        unknown<Minutes>(
+          causeAmplitude ?? {
+            code: CODES.JOURNEE_VIDE,
+            message: "Cette journée n'est pas assez renseignée pour être bornée.",
+            dayId,
+          },
+          { warnings },
+        ),
       ] as const
     }
 

@@ -79,6 +79,16 @@ export default tseslint.config(
     },
   },
 
+  // Scripts de build : ils tournent sous Node, à la main, jamais dans l'app.
+  {
+    files: ['scripts/**/*.mjs'],
+    ...tseslint.configs.disableTypeChecked,
+    languageOptions: {
+      globals: { ...globals.node, ...globals.nodeBuiltin },
+      parserOptions: { projectService: false, project: false },
+    },
+  },
+
   {
     files: ['tests/**/*.ts', 'tests/**/*.tsx', '*.config.ts', 'vitest.setup.ts'],
     languageOptions: { globals: { ...globals.node } },

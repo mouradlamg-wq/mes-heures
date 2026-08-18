@@ -141,6 +141,8 @@ export {
 } from './pay/heuresSup'
 export type { SynthesePeriode, LigneIndemnitePeriode } from './pay/synthese'
 export { synthetiserPeriode } from './pay/synthese'
+export type { DetailIntervalle, LigneJournaliere } from './pay/detail'
+export { detaillerIntervalle, statutDeLecture, datesEntre } from './pay/detail'
 
 export type { LigneIndemnite, IndemnitesDuJour } from './indemnites/indemnites'
 export {

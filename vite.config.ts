@@ -17,7 +17,7 @@ export default defineConfig({
       injectRegister: null,
       workbox: {
         // Precache complet : l'app doit démarrer sans réseau, jamais de fetch runtime.
-        globPatterns: ['**/*.{js,css,html,svg,woff2}'],
+        globPatterns: ['**/*.{js,css,html,svg,woff2,png}'],
         navigateFallback: 'index.html',
       },
       manifest: {
@@ -28,11 +28,13 @@ export default defineConfig({
         lang: 'fr',
         start_url: '/',
         display: 'standalone',
-        background_color: '#faf9f7',
-        theme_color: '#ec3013',
+        // Écran de démarrage : le fond de l'app en clair, pas la couleur de marque.
+        background_color: '#f2efec',
+        theme_color: '#f2efec',
         icons: [
-          { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },
-          { src: 'icon-512.png', sizes: '512x512', type: 'image/png' },
+          { src: 'icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: 'icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+          // Carré plein bord à bord : Android y découpe la forme de son choix.
           {
             src: 'icon-512-maskable.png',
             sizes: '512x512',
