@@ -2,6 +2,27 @@
 
 `pnpm verify` vert. 90 tests.
 
+## Décisions du CLAUDE.md §16
+
+Répondues avant de commencer, comme demandé.
+
+1. **Relevé PDF** → gabarit HTML + `window.print()`. Zéro dépendance, hors ligne,
+   « Enregistrer en PDF » du système. À faire en phase 7.
+2. **Types nominaux `Cents` / `Minutes`** → oui, adoptés. Voir
+   `src/engine/primitives/brands.ts`.
+3. **Rythme de livraison** → phases 1 à 4 d'affilée (le socle technique, sans
+   décision métier), rapport écrit à chaque étape, **arrêt franc avant la
+   phase 5**. La saisie est la phase qui décide de l'adoption : elle mérite un
+   avis avant d'être écrite.
+4. **Liste des codes d'indemnités** → celle du SPEC §8, livrée **sans aucun
+   montant** (`CODES_INDEMNITES_COURANTS`, vérifié par `IND-33`). Question
+   ouverte : en manque-t-il dans ta convention ?
+5. **Rappel de sauvegarde** → 14 jours puis alerte à 30, tel quel. Destination de
+   l'export : question ouverte, voir `PHASE-4.md`.
+6. **Design system « Modernist »** → le fichier n'était pas fourni ; il sera
+   reconstruit depuis `DESIGN.md` en phase 5, et restera remplaçable : aucune
+   valeur visuelle ne sera écrite ailleurs que dans ses variables.
+
 ## Fait
 
 **Échafaudage** — Vite 8 + React 19 + TypeScript 5.9 en `strict`, avec
