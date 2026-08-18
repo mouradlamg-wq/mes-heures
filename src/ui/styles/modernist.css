@@ -1,0 +1,490 @@
+/*
+ * Modernist — design system de Mes Heures.
+ *
+ * Reconstruit depuis DESIGN.md et les deux maquettes de référence
+ * (docs/aperçu). **C'est la seule source de couleurs, graisses, espacements,
+ * rayons et ombres de l'app** (DESIGN.md §2) : aucun hex, aucun nom de police,
+ * aucun px que ces variables portent déjà ne doit apparaître ailleurs.
+ *
+ * Si le vrai fichier Modernist arrive un jour, il remplace celui-ci sans
+ * toucher au reste du code.
+ */
+
+/* ————————————————————————————————————————————————————————
+ * Police — vendorisée, jamais un CDN : l'app doit démarrer sans réseau.
+ * Archivo est variable : un seul fichier sert les graisses 400, 600 et 800.
+ * ———————————————————————————————————————————————————————— */
+
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 100 900;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url('/fonts/archivo-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304,
+    U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 100 900;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url('/fonts/archivo-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308,
+    U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113,
+    U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* ————————————————————————————————————————————————————————
+ * Tokens
+ * ———————————————————————————————————————————————————————— */
+
+:root {
+  /* Un seul accent (DESIGN §3). La rampe existe pour les kickers, les hachures
+     et les états pressés — jamais pour introduire une deuxième couleur. */
+  --color-accent-100: #fdeae6;
+  --color-accent-200: #fac9c0;
+  --color-accent-300: #f6a08f;
+  --color-accent-400: #f2745c;
+  --color-accent-500: #ec3013;
+  --color-accent-600: #d62a10;
+  --color-accent-700: #b8240d;
+  --color-accent-800: #8c1b0a;
+  --color-accent-900: #5c1206;
+  --color-accent: var(--color-accent-500);
+
+  --color-neutral-100: #f7f5f3;
+  --color-neutral-200: #eeebe7;
+  --color-neutral-300: #dcd7d1;
+  --color-neutral-400: #bbb4ac;
+  --color-neutral-500: #948d85;
+  --color-neutral-600: #6f6862;
+  --color-neutral-700: #4d4844;
+  --color-neutral-800: #2e2b28;
+  --color-neutral-900: #17150f;
+
+  --color-bg: #f2efec;
+  --color-surface: #e9e5e0;
+  --color-text: #16130f;
+  --color-divider: #cbc5be;
+
+  /* Encres atténuées — exprimées en tokens pour qu'aucun composant n'écrive
+     une opacité à la main. */
+  --color-text-55: color-mix(in srgb, var(--color-text) 55%, transparent);
+  --color-text-50: color-mix(in srgb, var(--color-text) 50%, transparent);
+
+  --font-heading: 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-body: var(--font-heading);
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Rayon 0 partout (DESIGN §5). Les variables existent pour que personne
+     n'écrive `border-radius: 4px` en pensant bien faire. */
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+
+  --shadow-sm: none;
+  --shadow-md: none;
+  /* Réservée au dialogue modal, et à rien d'autre. */
+  --shadow-lg: 0 12px 48px rgb(0 0 0 / 28%);
+
+  --filet-section: 2px;
+  --filet-ligne: 1px;
+  --cible-tactile: 44px;
+
+  /* Dérivés du thème clair, redéfinis plus bas en sombre. Ils sont posés **ici**
+     et pas après les media queries : un `:root` plat plus loin dans le fichier
+     aurait la même spécificité et gagnerait, ce qui annulerait le thème sombre. */
+  --color-accent-kicker: var(--color-accent-700);
+  --color-accent-presse: var(--color-accent-600);
+  --hachure-claire: var(--color-accent-100);
+  --hachure-foncee: var(--color-accent-200);
+}
+
+/* Thème sombre (DESIGN §12) : on ne redéfinit que quatre tokens de fond et
+   d'encre. Rien d'autre ne change de structure. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #131211;
+    --color-surface: #1e1c1a;
+    --color-text: #f4f2f0;
+    --color-divider: #3a3633;
+
+    /* Tout **texte** rouge sur fond sombre passe en accent-400 ; l'aplat, lui,
+       reste l'accent pur. La hachure se construit sur 900 / 800. */
+    --color-accent-kicker: var(--color-accent-400);
+    --color-accent-presse: var(--color-accent-400);
+    --hachure-claire: var(--color-accent-900);
+    --hachure-foncee: var(--color-accent-800);
+  }
+}
+
+/* ————————————————————————————————————————————————————————
+ * Base
+ * ———————————————————————————————————————————————————————— */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 1.35;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Les colonnes de durées doivent s'aligner à la virgule : tabulaire partout,
+   sans exception (DESIGN §4). */
+body {
+  font-variant-numeric: tabular-nums;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.015em;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  font-variant-numeric: tabular-nums;
+  color: inherit;
+}
+
+/* Aucun texte centré, aucun libellé de bouton centré (DESIGN §4). */
+button {
+  text-align: left;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* ————————————————————————————————————————————————————————
+ * Filets et blocs
+ * ———————————————————————————————————————————————————————— */
+
+.hr {
+  border: 0;
+  border-top: var(--filet-ligne) solid var(--color-divider);
+  margin: 0;
+}
+
+.hr-section {
+  border: 0;
+  border-top: var(--filet-section) solid var(--color-divider);
+  margin: 0;
+}
+
+.card {
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ————————————————————————————————————————————————————————
+ * Typographie utilitaire
+ * ———————————————————————————————————————————————————————— */
+
+.kicker {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--color-accent-kicker);
+  margin: 0;
+}
+
+.kicker-neutre {
+  color: var(--color-text-55);
+}
+
+.legende {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-55);
+}
+
+/* Mention légale : 10 px, encre à 50 %. Ni raccourcie, ni en accordéon. */
+.mention {
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--color-text-50);
+  margin: 0;
+}
+
+/* ————————————————————————————————————————————————————————
+ * Boutons
+ * ———————————————————————————————————————————————————————— */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--cible-tactile);
+  padding: var(--space-3) var(--space-4);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  text-align: left;
+  justify-content: flex-start;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  color: var(--color-text-50);
+}
+
+.btn-primary {
+  background: var(--color-accent);
+  color: #fff;
+  font-weight: 800;
+  width: 100%;
+}
+
+.btn-primary:active {
+  background: var(--color-accent-presse);
+}
+
+.btn-secondary {
+  border: var(--filet-ligne) solid var(--color-divider);
+  color: var(--color-text);
+}
+
+.btn-secondary:active {
+  border-color: var(--color-text);
+}
+
+.btn-ghost {
+  color: var(--color-accent-kicker);
+  font-weight: 800;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.btn-ghost:active {
+  color: var(--color-accent-presse);
+}
+
+/* ————————————————————————————————————————————————————————
+ * Tags — un statut se lit en toutes lettres (DESIGN §6, §14)
+ * ———————————————————————————————————————————————————————— */
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Un tag qui porte une **valeur** ne se met pas en capitales : sinon le `h`
+   d'une durée et le `€` d'un montant sortent déformés. */
+.tag-valeur {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 11px;
+}
+
+.tag-accent {
+  background: var(--hachure-claire);
+  color: var(--color-accent-kicker);
+}
+
+.tag-outline {
+  border: var(--filet-ligne) solid var(--color-accent);
+  color: var(--color-accent-kicker);
+}
+
+.tag-neutre,
+.tag-neutral {
+  background: var(--color-surface);
+  color: var(--color-text-55);
+  border: var(--filet-ligne) dashed var(--color-divider);
+}
+
+/* ————————————————————————————————————————————————————————
+ * Champs
+ * ———————————————————————————————————————————————————————— */
+
+.field {
+  display: block;
+  padding: var(--space-3) 0;
+}
+
+.field-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-55);
+  margin-bottom: var(--space-1);
+}
+
+.input {
+  width: 100%;
+  min-height: var(--cible-tactile);
+  padding: var(--space-2) var(--space-3);
+  border: var(--filet-ligne) solid var(--color-divider);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  font-weight: 800;
+}
+
+.input:focus {
+  border-color: var(--color-text);
+}
+
+/* Un champ vide n'est pas neutre : cette ligne dit ce que son absence
+   désactive (DESIGN §10). */
+.field-consequence {
+  display: block;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--color-text-55);
+  margin-top: var(--space-1);
+}
+
+.field-source {
+  display: block;
+  font-size: 10px;
+  color: var(--color-text-50);
+  margin-top: var(--space-1);
+}
+
+/* ————————————————————————————————————————————————————————
+ * Segmented et radio
+ * ———————————————————————————————————————————————————————— */
+
+.seg {
+  display: flex;
+  border: var(--filet-ligne) solid var(--color-divider);
+}
+
+.seg > button {
+  flex: 1;
+  min-height: var(--cible-tactile);
+  padding: var(--space-2) var(--space-3);
+  border: 0;
+  background: transparent;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.seg > button + button {
+  border-left: var(--filet-ligne) solid var(--color-divider);
+}
+
+.seg > button[aria-pressed='true'] {
+  background: var(--color-text);
+  color: var(--color-bg);
+  font-weight: 800;
+}
+
+.radio {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--cible-tactile);
+  cursor: pointer;
+}
+
+/* ————————————————————————————————————————————————————————
+ * Tables
+ * ———————————————————————————————————————————————————————— */
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table thead th {
+  border-bottom: var(--filet-section) solid var(--color-divider);
+  padding: var(--space-2) 0;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--color-text-55);
+  text-align: left;
+}
+
+.table tbody td {
+  border-bottom: var(--filet-ligne) solid var(--color-divider);
+  padding: var(--space-3) 0;
+}
+
+.table td.nombre,
+.table th.nombre {
+  text-align: right;
+  font-weight: 800;
+}
+
+/* ————————————————————————————————————————————————————————
+ * Dialogue — seul endroit de l'app qui porte une ombre
+ * ———————————————————————————————————————————————————————— */
+
+.dialog {
+  border: 0;
+  padding: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  box-shadow: var(--shadow-lg);
+  width: min(100%, 390px);
+  margin: auto;
+}
+
+.dialog::backdrop {
+  background: rgb(0 0 0 / 45%);
+}
+
+/* ————————————————————————————————————————————————————————
+ * Hachure d'incertitude — « appuie ici », jamais décoratif (DESIGN §6)
+ * ———————————————————————————————————————————————————————— */
+
+.hachure {
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--hachure-claire),
+    var(--hachure-claire) 6px,
+    var(--hachure-foncee) 6px,
+    var(--hachure-foncee) 12px
+  );
+}

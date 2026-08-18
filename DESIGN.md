@@ -1,7 +1,7 @@
 # DESIGN.md — Mes Heures, direction visuelle « Le compteur »
 
 > Spec visuelle de l'app. À lire avec `CLAUDE.md` (règles de travail) et `SPEC.md` (métier).
-> Maquette de référence : direction **1c** — écran « Aujourd'hui », mardi 17 mars. Elle prime sur toute description ambiguë de ce fichier.
+> Maquettes de référence : direction **1c** — « Aujourd'hui » (mardi 17 mars) et « Vérifier ma paie » (option `2a`, mars). Elles priment sur toute description ambiguë de ce fichier.
 
 ---
 
@@ -103,7 +103,8 @@ Interdit : afficher `0` ou `—` pour un `unknown`, désactiver un champ sans di
 - **Bloc horaire** — `Prise` / séparateur vertical 2 px × 26 / `Fin`, chiffres 32 px, `Amplitude` poussée à droite en 20 px. C'est le seul endroit où trois valeurs partagent une ligne.
 - **Ligne de segment** — pastille 8 × 24 px, plage horaire 13 px (colonne fixe 96 px, tabulaire), type, durée en 800 poussée à droite, filet 1 px en bas. Pastilles : encre = conduite, `--color-neutral-300` = coupure et disponibilité, `--color-accent` = autre travail, `--color-accent` + hachure = non qualifié.
 - **Pied de journée** — filet 2 px, « Temps rémunéré » + valeur en 22 px, la mention légale, puis le bouton primaire pleine largeur libellé à gauche.
-- **Ligne d'écart** (écran Vérifier ma paie, hors des trois écrans ci-dessous) — deux valeurs côte à côte, « toi » et « ta fiche », l'écart signé en 800, dépliable sur les `CalculationStep`.
+- **Ligne d'écart** — un libellé, son tag de statut, puis trois valeurs sur une ligne : `Toi` · `Ta fiche` (encadrée 1 px : c'est la seule valeur saisie par l'utilisateur) · `Écart` poussé à droite en 22 px. Dépliable sur ses preuves. Détaillée au §11.
+- **Dépliant de preuves** — bloc `--color-surface`, kicker rouge « Comment j'arrive à … », les `CalculationStep` numérotés en 11,5 px (le résultat de chaque étape en 800), puis la ligne de sources en 10 px sur filet 1 px, et un `.btn-secondary` vers les journées concernées.
 
 ---
 
@@ -133,6 +134,7 @@ Ordre vertical imposé :
 
 ## 10. Écran « Réglages »
 
+
 - Une section par famille (Entreprise, Période de paie, Heures supplémentaires, Coupures et disponibilité, Indemnités, Sauvegarde), séparées par un filet 2 px, titre en kicker rouge.
 - Champs `.field` + `.input`, `.radio` pour les modes, `.seg` pour un choix à deux ou trois options courtes.
 - **Un champ vide n'est pas neutre.** Sous chaque champ non renseigné : une ligne 11 px indiquant ce que son absence désactive (« sans ce taux, le brut reste incalculable »). C'est la contrepartie visible de la règle « absence de configuration = absence de donnée ».
@@ -142,7 +144,45 @@ Ordre vertical imposé :
 
 ---
 
-## 11. Thème — suit le système
+## 11. Écran « Vérifier ma paie »
+
+L'écran le plus délicat de l'app : il met en cause une fiche de paie. Le visuel doit être **froid**. Aucune couleur d'alarme, aucun ton accusateur, aucun point d'exclamation.
+
+Ordre vertical imposé :
+
+1. titre + bornes de la période (issues des réglages, jamais un mois déduit) ;
+2. filet 2 px, **compteur d'écart** ;
+3. **la mention obligatoire**, en tête de la liste — jamais en pied, jamais en accordéon ;
+4. filet 2 px, liste des lignes d'écart (seule zone qui défile) ;
+5. filet 2 px, pied : `Éditer le relevé de <mois>` en primaire pleine largeur.
+
+### Le compteur d'écart ne porte que du certain
+
+Chiffre 68 px : **l'écart en heures supplémentaires**, statut `complete`, signe toujours explicite (`+1 h 15`). Sous-ligne 13 px pour l'écart monétaire, puis les tags : `PARTIEL` s'il reste une ligne non comparable, et le décompte honnête (`1 ligne incalculable`, `3 lignes comparées`).
+
+**Interdit d'additionner des heures et des euros dans un même total**, et interdit de convertir des heures en euros sans taux horaire renseigné. Si aucune ligne n'est comparable, le compteur devient un `unknown` : une phrase, pas de chiffre.
+
+### Les quatre états d'une ligne
+
+| Cas | Traitement |
+|---|---|
+| Écart, `complete` | trois valeurs, écart signé en 800, ligne dépliable |
+| Aucun écart | même ligne, l'écart s'écrit « aucun » en 13 px encre 55 % — **pas** `0,00 €`, pas de coche verte |
+| `partial` | `Toi` affiche l'intervalle, `Écart` affiche un intervalle (`0 – 1 h 30`), la colonne `Ta fiche` **disparaît** — on ne compare pas une borne ; sous la ligne, l'encadré hachuré cliquable qui mène à la qualification |
+| `unknown` | tag `INCALCULABLE`, aucune valeur, aucune colonne ; un encadré pointillé 1 px avec la phrase à la première personne (« Je ne peux pas calculer ton brut : … »), puis un `.btn-ghost` vers le réglage manquant, libellé terminé par `→` |
+
+### Règles de ligne
+
+- Une ligne dépliable dit qu'elle l'est, en 11 px sous les valeurs (`3 étapes · appuie pour voir le détail` ↔ `Replier le détail`). Pas de chevron seul.
+- **Une seule ligne dépliée à la fois** : ouvrir la suivante replie la précédente.
+- Cible tactile : toute la ligne, sur toute sa largeur.
+- Le dépliant remonte jusqu'aux journées : chaque preuve se termine par un accès aux `dayId` qui la composent. C'est la traduction visuelle de l'exigence « le moteur produit des preuves, pas des nombres ».
+- La valeur `Ta fiche` est un champ de saisie, `inputmode="numeric"`, jamais préremplie par une estimation.
+- L'écart ne prend jamais la couleur accent, ni en positif ni en négatif. Un écart favorable et un écart défavorable ont **exactement** le même traitement : c'est le signe qui informe, pas la couleur.
+
+---
+
+## 12. Thème — suit le système
 
 Un seul jeu de composants, deux jeux de tokens. En sombre, on redéfinit **uniquement** `--color-bg`, `--color-surface`, `--color-text` et `--color-divider` ; rien d'autre ne change de structure.
 
@@ -153,7 +193,7 @@ Un seul jeu de composants, deux jeux de tokens. En sombre, on redéfinit **uniqu
 
 ---
 
-## 12. Mentions obligatoires, au mot près
+## 13. Mentions obligatoires, au mot près
 
 - Écrans de durées (Aujourd'hui, Ma semaine / Ma période) : *« Ces durées sont indicatives. Cette version ne vérifie pas la conformité au règlement européen. »* — 10 px, encre 50 %, juste au-dessus de l'action principale.
 - Écran Vérifier ma paie : *« Un écart n'est pas forcément une erreur. Compare avec ton contrat, puis vois avec ton employeur ou tes représentants du personnel. »* — même traitement, en tête de la liste d'écarts.
@@ -162,12 +202,14 @@ Ces phrases ne sont ni raccourcies, ni mises en accordéon, ni reléguées dans 
 
 ---
 
-## 13. Interdits
+## 14. Interdits
 
-Coin arrondi · ombre dans un écran de saisie · libellé de bouton centré · filet remplacé par du blanc · rouge comme couleur d'erreur ou d'écart · deux aplats rouges sur un même écran · chiffre non tabulaire · durée affichée dans une seule des deux notations · `0` ou `—` à la place d'un `unknown` · sélecteur d'heure à faire défiler · image, illustration, dégradé, emoji · icône seule pour un statut (le mot est obligatoire, l'icône est un renfort) · animation d'apparition sur un chiffre de paie.
+Coin arrondi · ombre dans un écran de saisie · couleur sur un écart (favorable ou non) · total mélangeant heures et euros · libellé de bouton centré · filet remplacé par du blanc · rouge comme couleur d'erreur ou d'écart · deux aplats rouges sur un même écran · chiffre non tabulaire · durée affichée dans une seule des deux notations · `0` ou `—` à la place d'un `unknown` · sélecteur d'heure à faire défiler · image, illustration, dégradé, emoji · icône seule pour un statut (le mot est obligatoire, l'icône est un renfort) · animation d'apparition sur un chiffre de paie.
 
 ---
 
-## 14. À maquetter ensuite
+## 15. À maquetter ensuite
 
-« Ma semaine / Ma période » et « Réglages » sont spécifiés ici mais pas encore dessinés ; « Vérifier ma paie » ne l'est ni l'un ni l'autre et reste l'écran le plus délicat. Les faire avant la phase 6 du SPEC.
+Dessinés : « Aujourd'hui » et « Vérifier ma paie ». Spécifiés mais pas encore dessinés : « Ma semaine / Ma période », « Réglages », et le relevé PDF — à faire avant la phase 6 du SPEC.
+
+Question ouverte, à trancher avant la phase 6 : la ligne d'écart doit-elle afficher **aussi** le montant à côté des heures supplémentaires ? Cela suppose un taux majoré dans les réglages, donc une valeur qui passera souvent en `INCALCULABLE`. En l'état, la spec ne compare que ce qui est certain.

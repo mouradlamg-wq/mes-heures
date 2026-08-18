@@ -147,6 +147,26 @@ describe('ARC — pureté du moteur et règle des dépendances', () => {
     aucunDansLeMoteur(/\bMath\.round\s*\(/, ['primitives/roundingPolicy.ts'])
   })
 
+  it('ARC-09 — src/ui ne contient aucune arithmétique métier', () => {
+    // Les durées et les montants ne se calculent pas dans un composant : ni
+    // `h * 60`, ni `centimes / 100`, ni `+` sur deux valeurs métier. Tout passe
+    // par le moteur, qui est le seul testable sans DOM (CLAUDE.md §4).
+    const composants = tousLesFichiers.filter((f) => /^src\/(ui|pdf)\//.test(court(f)))
+    expect(composants.length).toBeGreaterThan(3)
+
+    for (const fichier of composants) {
+      const code = codeSeul(lire(fichier))
+      // Multiplication ou division par une constante de temps ou d'argent.
+      expect(code, court(fichier)).not.toMatch(/[*/]\s*(60|100|1000|3600)\b/)
+      expect(code, court(fichier)).not.toMatch(/\b(60|100)\s*[*/]/)
+      // Arithmétique sur un identifiant métier du glossaire (CLAUDE.md §15).
+      expect(code, court(fichier)).not.toMatch(
+        /\b(duree|montant|amplitude|tempsRemunere|heuresSup|minutes|cents|Cents|Minutes)\w*\s*[+\-*/]\s*\w/,
+      )
+      expect(code, court(fichier)).not.toMatch(/\btoFixed\s*\(/)
+    }
+  })
+
   it('ARC-13 — hors du moteur, on n’importe que sa surface publique', () => {
     const consommateurs = tousLesFichiers.filter((f) =>
       /^src\/(ui|pdf|app|db)\//.test(court(f)),

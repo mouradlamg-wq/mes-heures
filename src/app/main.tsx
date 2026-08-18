@@ -1,5 +1,9 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import '../ui/styles/modernist.css'
+import '../ui/styles/app.css'
+import { App } from './App'
+import { FournisseurDonnees } from './donnees'
 
 const racine = document.getElementById('root')
 
@@ -9,11 +13,8 @@ if (racine === null) {
 
 createRoot(racine).render(
   <StrictMode>
-    <main>
-      <h1>Mes Heures</h1>
-      <p>
-        Le moteur de calcul et la persistance sont en place. Les écrans arrivent à la phase 5.
-      </p>
-    </main>
+    <FournisseurDonnees>
+      <App />
+    </FournisseurDonnees>
   </StrictMode>,
 )

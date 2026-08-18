@@ -95,6 +95,31 @@ export class Repository {
     await this.base.qualifications.put(qualification)
   }
 
+  /**
+   * Remplace la qualification qui couvre exactement cette tranche, s'il y en a
+   * une. Superposer deux qualifications de types différents créerait un
+   * chevauchement, donc une zone indéterminée — l'inverse de ce que
+   * l'utilisateur demande en re-qualifiant.
+   */
+  async requalifier(qualification: QualificationManuelle): Promise<void> {
+    await this.base.transaction('rw', this.base.qualifications, async () => {
+      const existantes = await this.base.qualifications
+        .where('dayId')
+        .equals(qualification.dayId)
+        .toArray()
+
+      const aRemplacer = existantes.filter(
+        (q) => q.debut === qualification.debut && q.fin === qualification.fin,
+      )
+      await this.base.qualifications.bulkDelete(aRemplacer.map((q) => q.id))
+      await this.base.qualifications.put(qualification)
+    })
+  }
+
+  async supprimerQualification(id: string): Promise<void> {
+    await this.base.qualifications.delete(id)
+  }
+
   async lireSaisiesIndemnites(dayIds: readonly string[]): Promise<SaisieIndemnite[]> {
     return this.base.saisiesIndemnites.where('dayId').anyOf([...dayIds]).toArray()
   }

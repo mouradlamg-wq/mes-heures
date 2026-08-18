@@ -129,6 +129,36 @@ function analyserHeure(heure: HeureHorloge): { heures: number; minutes: number }
   return { heures, minutes }
 }
 
+/**
+ * Contrôle de la seule **forme** d'une heure d'horloge, sans date ni fuseau.
+ * Sert à la saisie : le champ doit pouvoir refuser `25:00` immédiatement, avant
+ * même de savoir sur quelle journée l'heure tombe.
+ *
+ * Le refus est une phrase française, affichable telle quelle. Jamais de
+ * correction silencieuse (SPEC §5).
+ */
+export function validerHeureHorloge(
+  heure: HeureHorloge,
+): { readonly status: 'ok' } | { readonly status: 'invalid'; readonly reason: string } {
+  const trouve = RE_HEURE.exec(heure)
+  if (trouve === null) {
+    return {
+      status: 'invalid',
+      reason: "Attendu : deux chiffres, deux points, deux chiffres, par exemple 06:15.",
+    }
+  }
+  if (Number(trouve[1]) > 23) {
+    return {
+      status: 'invalid',
+      reason: "Il n'y a pas d'heure au-delà de 23. Minuit s'écrit 00:00.",
+    }
+  }
+  if (Number(trouve[2]) > 59) {
+    return { status: 'invalid', reason: "Il n'y a pas de minute au-delà de 59." }
+  }
+  return { status: 'ok' }
+}
+
 export function formatInstant(instantMillis: number, nomZone: string): ISODateTime {
   const iso = DateTime.fromMillis(instantMillis, { zone: nomZone }).toISO({
     suppressMilliseconds: true,

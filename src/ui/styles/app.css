@@ -1,0 +1,435 @@
+/*
+ * Motifs propres à l'app (DESIGN.md §7). Ils **composent** les classes du
+ * design system, ils ne les réécrivent pas : aucune valeur littérale ici,
+ * uniquement des `var(--…)` de modernist.css.
+ */
+
+/* Gouttière d'écran : var(--space-4) à gauche et à droite, partout, sans
+   exception (DESIGN §5). */
+.gouttiere {
+  padding-left: var(--space-4);
+  padding-right: var(--space-4);
+}
+
+.ecran {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  max-width: 430px;
+  margin: 0 auto;
+  background: var(--color-bg);
+}
+
+.barre-app {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-top: var(--space-3);
+  padding-bottom: var(--space-3);
+}
+
+.barre-app__titre {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--color-text-55);
+}
+
+.nav {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.nav__lien {
+  border: 0;
+  background: transparent;
+  padding: var(--space-1) 0;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--color-text-55);
+  cursor: pointer;
+}
+
+.nav__lien[aria-current='page'] {
+  color: var(--color-text);
+  border-bottom: var(--filet-section) solid var(--color-accent);
+}
+
+/* ————————————————————————————————————————————————————————
+ * Compteur — un seul par écran, en haut (DESIGN §7)
+ * ———————————————————————————————————————————————————————— */
+
+.compteur {
+  padding-top: var(--space-4);
+  padding-bottom: var(--space-4);
+  background: var(--color-surface);
+}
+
+.compteur__valeur {
+  font-size: 76px;
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  margin-top: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+/* L'unité « h » à 34 px, collée au chiffre. */
+.compteur__unite {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.compteur__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.compteur__phrase {
+  font-size: 13px;
+  line-height: 1.4;
+  margin: var(--space-2) 0 var(--space-3);
+}
+
+/* ————————————————————————————————————————————————————————
+ * En-tête de journée
+ * ———————————————————————————————————————————————————————— */
+
+.jour-entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+  padding-bottom: var(--space-3);
+}
+
+.jour-entete__date {
+  font-size: 22px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+
+.jour-entete__nav {
+  display: flex;
+  gap: var(--space-1);
+}
+
+/* ————————————————————————————————————————————————————————
+ * Bloc horaire — le seul endroit où trois valeurs partagent une ligne
+ * ———————————————————————————————————————————————————————— */
+
+.bloc-horaire {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-4);
+  padding-bottom: var(--space-4);
+}
+
+.bloc-horaire__champ {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.bloc-horaire__separateur {
+  width: var(--filet-section);
+  height: 26px;
+  background: var(--color-divider);
+  margin-bottom: var(--space-1);
+}
+
+.bloc-horaire__amplitude {
+  margin-left: auto;
+  text-align: right;
+}
+
+.bloc-horaire__amplitude .valeur {
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.heure-saisie {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  border: 0;
+  border-bottom: var(--filet-section) solid transparent;
+  background: transparent;
+  padding: 0;
+  width: 3.6em;
+  min-height: var(--cible-tactile);
+}
+
+.heure-saisie::placeholder {
+  color: var(--color-neutral-400);
+}
+
+.heure-saisie:focus {
+  outline: none;
+  border-bottom-color: var(--color-accent);
+}
+
+.heure-saisie--invalide {
+  border-bottom-color: var(--color-accent);
+}
+
+.refus-saisie {
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--color-text);
+  margin-top: var(--space-1);
+  max-width: 34ch;
+}
+
+/* ————————————————————————————————————————————————————————
+ * Ligne de segment (DESIGN §7)
+ * ———————————————————————————————————————————————————————— */
+
+.segments {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.segment {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: 46px;
+  padding: var(--space-2) var(--space-4);
+  border: 0;
+  border-bottom: var(--filet-ligne) solid var(--color-divider);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.segment__pastille {
+  flex: 0 0 auto;
+  width: 8px;
+  height: 24px;
+}
+
+.segment__pastille--conduite {
+  background: var(--color-text);
+}
+
+.segment__pastille--coupure,
+.segment__pastille--disponibilite {
+  background: var(--color-neutral-300);
+}
+
+.segment__pastille--autre_travail {
+  background: var(--color-accent);
+}
+
+.segment__pastille--non-qualifie {
+  background: var(--color-accent);
+}
+
+.segment__plage {
+  flex: 0 0 96px;
+  font-size: 13px;
+}
+
+.segment__type {
+  flex: 1 1 auto;
+  font-size: 15px;
+}
+
+.segment__duree {
+  flex: 0 0 auto;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+/* Zone non qualifiée : la hachure veut dire « appuie ici ».
+   Elle est réappliquée ici parce que `.segment` pose `background: transparent`,
+   et que la forme courte du fond efface l'image posée par `.hachure`. */
+.segment--non-qualifie {
+  border: var(--filet-ligne) dashed var(--color-accent);
+  border-left: 0;
+  border-right: 0;
+  color: var(--color-accent-kicker);
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--hachure-claire),
+    var(--hachure-claire) 6px,
+    var(--hachure-foncee) 6px,
+    var(--hachure-foncee) 12px
+  );
+}
+
+.segment--non-qualifie .segment__type,
+.segment--non-qualifie .segment__plage,
+.segment--non-qualifie .segment__duree {
+  color: var(--color-accent-kicker);
+}
+
+.segment__supprimer {
+  flex: 0 0 auto;
+  border: 0;
+  background: transparent;
+  padding: var(--space-2);
+  color: var(--color-text-55);
+  cursor: pointer;
+  line-height: 1;
+}
+
+/* ————————————————————————————————————————————————————————
+ * Raccourcis de saisie — en tête de liste, avant tout champ (DESIGN §8)
+ * ———————————————————————————————————————————————————————— */
+
+.raccourcis {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding-top: var(--space-3);
+  padding-bottom: var(--space-3);
+}
+
+.raccourcis .btn {
+  min-height: var(--cible-tactile);
+}
+
+/* ————————————————————————————————————————————————————————
+ * Pied de journée
+ * ———————————————————————————————————————————————————————— */
+
+.pied {
+  margin-top: auto;
+}
+
+.pied__ligne {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-top: var(--space-4);
+  padding-bottom: var(--space-2);
+}
+
+.pied__valeur {
+  font-size: 22px;
+  font-weight: 800;
+  text-align: right;
+}
+
+.pied__mention {
+  padding-bottom: var(--space-3);
+}
+
+.pied__action {
+  padding-bottom: var(--space-4);
+}
+
+/* ————————————————————————————————————————————————————————
+ * Valeurs et statuts
+ * ———————————————————————————————————————————————————————— */
+
+.valeur-double {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.valeur-double__centiemes {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--color-text-55);
+}
+
+/* Un `unknown` ne montre aucun chiffre : une phrase, une cause, un lien
+   (DESIGN §6). */
+.incalculable {
+  border: var(--filet-ligne) dashed var(--color-divider);
+  padding: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.incalculable__phrase {
+  font-size: 13px;
+  line-height: 1.45;
+  margin: var(--space-2) 0 0;
+}
+
+/* ————————————————————————————————————————————————————————
+ * Dialogue
+ * ———————————————————————————————————————————————————————— */
+
+.dialog__corps {
+  padding: var(--space-4);
+}
+
+.dialog__titre {
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: var(--space-2);
+}
+
+.dialog__texte {
+  font-size: 13px;
+  line-height: 1.45;
+  margin: 0 0 var(--space-4);
+}
+
+.dialog__choix {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.dialog__choix .btn {
+  width: 100%;
+  border: var(--filet-ligne) solid var(--color-divider);
+}
+
+/* ————————————————————————————————————————————————————————
+ * Réglages
+ * ———————————————————————————————————————————————————————— */
+
+.reglages__section {
+  padding-top: var(--space-4);
+  padding-bottom: var(--space-4);
+}
+
+.reglages__titre {
+  margin-bottom: var(--space-2);
+}
+
+.liste-indemnites {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.liste-indemnite {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: var(--filet-ligne) solid var(--color-divider);
+}
+
+.liste-indemnite__libelle {
+  flex: 1 1 auto;
+}
+
+.liste-indemnite__code {
+  font-size: 10px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--color-text-55);
+}
+
+.liste-indemnite__montant {
+  font-weight: 800;
+}

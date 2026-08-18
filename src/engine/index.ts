@@ -71,7 +71,16 @@ export {
 export { assertNever } from './primitives/assertNever'
 
 export type { ISODate, ISODateTime, HeureHorloge, LocalTimeResolution } from './time/types'
-export { parseHeureLocale, formatInstant } from './time/localTime'
+export { parseHeureLocale, formatInstant, validerHeureHorloge } from './time/localTime'
+export {
+  lireDureeSaisie,
+  ecrireDureeSaisie,
+  lireMontantSaisie,
+  ecrireMontantSaisie,
+  lirePourcentageSaisie,
+  ecrirePourcentageSaisie,
+  lireEntierSaisie,
+} from './primitives/saisie'
 export type { LectureInstant } from './time/instant'
 export {
   lireInstant,

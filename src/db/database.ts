@@ -65,3 +65,16 @@ export class BaseMesHeures extends Dexie {
 
 /** Version du schéma Dexie, à faire évoluer avec `this.version(n)`. */
 export const VERSION_SCHEMA = 1
+
+/**
+ * Réglages d'une base neuve. **Seul `timeZoneReference` est renseigné**
+ * (SPEC §9) : c'est le seul endroit de toute l'app où `'Europe/Paris'` a le
+ * droit d'être écrit en dur (CLAUDE.md §6). Tout le reste est absent, donc
+ * `unknown` à l'écran, avec la cause et le lien vers le réglage à remplir.
+ */
+export function settingsParDefaut(): Settings {
+  return {
+    timeZoneReference: 'Europe/Paris',
+    indemnites: [],
+  }
+}
