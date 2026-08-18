@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { useState } from 'react'
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
@@ -10,6 +11,7 @@ import {
   type Minutes,
 } from '../../src/engine'
 import { ChampHeure } from '../../src/ui/composants/ChampHeure'
+import { SaisieDuree } from '../../src/ui/composants/SaisieDuree'
 import { ResultatDuree } from '../../src/ui/composants/Duree'
 import { TagStatut } from '../../src/ui/composants/Statut'
 import { rangees } from '../../src/ui/ecrans/rangees'
@@ -19,6 +21,18 @@ import { aQualificationManuelle, aWorkDay, PARIS, reinitialiserCompteur } from '
 const LUNDI = '2027-03-15'
 /** Chiffres — sert à vérifier qu'un `unknown` n'en montre aucun. */
 const UN_CHIFFRE = /\d/
+
+/**
+ * Texte affiché, espaces insécables ramenés à des espaces ordinaires.
+ *
+ * Les assertions restent ainsi lisibles — `'151 h 40'` — sans qu'on puisse
+ * confondre un test qui passe avec un test dont le littéral contient par hasard
+ * le bon caractère invisible. La présence des insécables, elle, est vérifiée à
+ * la source par `NUM-14`.
+ */
+function texteRendu(): string {
+  return (document.body.textContent ?? '').replaceAll(' ', ' ')
+}
 
 beforeEach(reinitialiserCompteur)
 afterEach(cleanup)
@@ -53,7 +67,7 @@ describe('INT — restitution des résultats', () => {
     expect(screen.getByText("Le taux horaire n'est pas renseigné.")).toBeDefined()
 
     // Ni 0, ni tiret, ni valeur grisée (DESIGN §6, §14).
-    const rendu = document.body.textContent ?? ''
+    const rendu = texteRendu()
     expect(rendu).not.toMatch(UN_CHIFFRE)
     expect(rendu).not.toContain('—')
 
@@ -68,18 +82,18 @@ describe('INT — restitution des résultats', () => {
       />,
     )
 
-    const rendu = document.body.textContent ?? ''
-    expect(rendu).toContain('8 h 20')
-    expect(rendu).toContain('9 h 50')
+    const rendu = texteRendu()
+    expect(rendu).toContain('8 h 20')
+    expect(rendu).toContain('9 h 50')
     expect(rendu).toContain('–')
   })
 
   it('INT-05 — un complete montre la valeur dans les deux notations', () => {
     render(<ResultatDuree resultat={partial<Minutes>({ min: minutes(500), max: minutes(500) })} />)
 
-    const rendu = document.body.textContent ?? ''
-    expect(rendu).toContain('8 h 20')
-    expect(rendu).toContain('8,33 h')
+    const rendu = texteRendu()
+    expect(rendu).toContain('8 h 20')
+    expect(rendu).toContain('8,33 h')
   })
 
   it('INT-06 — le statut est écrit en toutes lettres', () => {
@@ -120,6 +134,66 @@ describe('INT — saisie', () => {
     expect(champ.value).toBe('25:00')
     expect(onChange).not.toHaveBeenCalledWith('25:00')
     expect(screen.getByRole('alert').textContent).toContain("pas d'heure au-delà de 23")
+  })
+
+  it('INT-16 — une durée se tape chiffre par chiffre, chaque frappe est visible', () => {
+    // La régression que ce test verrouille : avec un champ purement contrôlé,
+    // les deux premières touches n'ont rien à réécrire (une durée n'est lisible
+    // qu'à trois chiffres), l'affichage repart à vide, et le champ devient
+    // impossible à remplir.
+    const onChange = vi.fn()
+    function Hote(): React.JSX.Element {
+      const [valeur, setValeur] = useState<Minutes | undefined>(undefined)
+      return (
+        <SaisieDuree
+          identifiant="duree"
+          valeur={valeur}
+          onChange={(nouvelle) => {
+            onChange(nouvelle)
+            setValeur(nouvelle)
+          }}
+        />
+      )
+    }
+    render(<Hote />)
+
+    const champ = screen.getByRole('textbox')
+    const frappes = ['1', '15', '151', '1514', '15140']
+    const affiches: string[] = []
+    for (const frappe of frappes) {
+      fireEvent.change(champ, { target: { value: frappe } })
+      affiches.push((champ as HTMLInputElement).value)
+    }
+
+    expect(affiches).toEqual(frappes)
+    // Rien n'est enregistré tant que la saisie ne dit rien : 1 et 15 sont muets.
+    expect(onChange).toHaveBeenCalledTimes(3)
+    expect(onChange).toHaveBeenLastCalledWith(151 * 60 + 40)
+  })
+
+  it('INT-17 — la saisie en cours est relue, centièmes compris', () => {
+    render(<SaisieDuree identifiant="duree" valeur={undefined} onChange={vi.fn()} />)
+
+    const champ = screen.getByRole('textbox')
+    fireEvent.change(champ, { target: { value: '15' } })
+    expect(texteRendu()).toContain('Continue')
+
+    fireEvent.change(champ, { target: { value: '15140' } })
+    expect(texteRendu()).toContain('151 h 40')
+    expect(texteRendu()).toContain('151,67 h')
+  })
+
+  it('INT-18 — à la sortie du champ, l’affichage reprend la forme canonique', () => {
+    render(<SaisieDuree identifiant="duree" valeur={minutes(151 * 60 + 40)} onChange={vi.fn()} />)
+
+    const champ = screen.getByRole('textbox')
+    expect((champ as HTMLInputElement).value).toBe('151:40')
+
+    fireEvent.change(champ, { target: { value: '15140' } })
+    expect((champ as HTMLInputElement).value).toBe('15140')
+
+    fireEvent.blur(champ)
+    expect((champ as HTMLInputElement).value).toBe('151:40')
   })
 
   it('INT-09 — aucun sélecteur d’heure à faire défiler', () => {

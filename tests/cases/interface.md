@@ -24,3 +24,6 @@ notations, et qu'une zone non qualifiée reste atteignable en un appui.
 | INT-13 | Cible tactile minimale | 44 px sur tout élément actionnable, 46 px sur une ligne de segment |
 | INT-14 | Rayon 0 et aucune ombre hors dialogue | contrôlé sur la feuille de styles |
 | INT-15 | Le rouge n'est pas une couleur d'erreur | aucune règle ne colore un écart ou un échec en accent |
+| INT-16 | Saisie d'une durée de référence, chiffre par chiffre | **chaque frappe est visible**, y compris les deux premières qui ne forment pas encore une durée lisible ; la valeur n'est enregistrée qu'à partir de trois chiffres |
+| INT-17 | La saisie en cours est relue à l'écran | `15140` → « se lit 151 h 40, soit 151,67 h sur ta fiche » — les centièmes servent à comparer avec la fiche de paie |
+| INT-18 | Sortie du champ de durée | l'affichage reprend la forme canonique `151:40` |

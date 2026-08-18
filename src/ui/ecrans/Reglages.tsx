@@ -1,11 +1,9 @@
 import { useEffect, useRef } from 'react'
 import {
   CODES_INDEMNITES_COURANTS,
-  ecrireDureeSaisie,
   ecrireMontantSaisie,
   ecrirePourcentageSaisie,
   formatMontant,
-  lireDureeSaisie,
   lireEntierSaisie,
   lireMontantSaisie,
   lirePourcentageSaisie,
@@ -15,6 +13,7 @@ import {
   type Settings,
 } from '../../engine'
 import { useDonnees } from '../../app/contexteDonnees'
+import { SaisieDuree } from '../composants/SaisieDuree'
 import { TagStatut } from '../composants/Statut'
 
 /**
@@ -302,31 +301,30 @@ function ChampNombre(proprietes: ProprietesChamp<number>): React.JSX.Element {
   )
 }
 
-/** Saisie en `HH:mm`. La conversion en minutes est faite par le moteur. */
+
+/**
+ * Saisie d'une durée en heures et minutes. Le champ lui-même vit dans
+ * `composants/SaisieDuree` : il porte une logique de frappe qui mérite d'être
+ * testée sans écran.
+ */
 function ChampDuree(proprietes: ProprietesChamp<Minutes>): React.JSX.Element {
   return (
     <Enveloppe {...proprietes} rempli={proprietes.valeur !== undefined}>
-      <input
-        id={proprietes.identifiant}
-        className="input"
-        type="text"
-        inputMode="numeric"
-        placeholder="--:--"
-        value={proprietes.valeur === undefined ? '' : ecrireDureeSaisie(proprietes.valeur)}
-        onChange={(evenement) => {
-          const lue = lireDureeSaisie(evenement.target.value)
-          // Une saisie incomplète ne remplace pas la valeur : on attend qu'elle
-          // soit lisible plutôt que d'écrire une durée à moitié tapée.
-          if (lue !== undefined || evenement.target.value.replace(/\D/g, '') === '') {
-            proprietes.onChange(lue)
-          }
-        }}
+      <SaisieDuree
+        identifiant={proprietes.identifiant}
+        valeur={proprietes.valeur}
+        onChange={proprietes.onChange}
       />
     </Enveloppe>
   )
 }
 
-/** Saisie en euros, stockée en centimes entiers : aucun flottant ne passe. */
+/**
+ * Saisie en euros, stockée en centimes entiers : aucun flottant ne passe.
+ * La frappe est cumulative comme sur un terminal de paiement — `1`, `3`, `4`,
+ * `5` compose `13,45` — donc chaque touche a un effet visible, sans séparateur
+ * à placer soi-même.
+ */
 function ChampMontant(proprietes: ProprietesChamp<Cents>): React.JSX.Element {
   return (
     <Enveloppe {...proprietes} rempli={proprietes.valeur !== undefined}>
