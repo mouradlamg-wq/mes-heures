@@ -16,12 +16,12 @@ Aucune indemnité pré-configurée avec un montant.
 | IND-09 | Deux segments recouvrant ensemble la plage, mais aucun seul | **non** déclenchée — le recouvrement s'apprécie segment par segment |
 | IND-10 | Plage traversant minuit `22:00–02:00`, journée rattachée au lundi, segment lundi 21:30 → mardi 02:30 | déclenchée, plage évaluée sur la **journée de service** |
 | IND-11 | Même plage, segment mardi 22:00 → mercredi 02:30 sur une journée rattachée au lundi | non déclenchée : la plage a été évaluée sur le lundi |
-| IND-12 | Plage traversant minuit un jour de changement d'heure | évaluée sur les instants réels, pas sur les heures locales |
+| IND-12 | Plage traversant minuit un jour de changement d'heure | la plage est construite sur des **instants réels** ; si une de ses bornes tombe dans l'heure ambiguë ou inexistante, la ligne passe en `unknown` plutôt que d'arbitrer |
 | IND-13 | `decouche` : `WorkDay.decouche = true`, deux `IndemniteConfig` distinctes (repos, repas) | les deux déclenchées, jamais une indemnité composite |
 | IND-14 | `decouche = false` ou absent | aucune indemnité de découcher |
 | IND-15 | `duree_service` `amplitudeMinMinutes = 720`, amplitude 11 h | non déclenchée |
 | IND-16 | Même config, amplitude 12 h pile | déclenchée, seuil inclusif |
-| IND-17 | `duree_service` sur une journée dont l'amplitude est `partial` | `partial` — le déclenchement est incertain, il est signalé comme tel |
+| IND-17 | `duree_service` sur une journée dont l'amplitude est inconnue (fin de service non saisie) | `unknown` — le déclenchement n'est pas deviné |
 | IND-18 | `quantite_manuelle` | quantité saisie utilisée telle quelle, étiquetée `saisie_utilisateur` |
 | IND-19 | `quantiteMaxParJour` par défaut (1), deux déclenchements le même jour | une seule indemnité |
 | IND-20 | `quantiteMaxParJour = 2`, trois déclenchements | deux indemnités, le plafond apparaît dans les `steps` |

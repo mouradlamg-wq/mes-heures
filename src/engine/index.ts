@@ -110,3 +110,34 @@ export { TYPES_SEGMENT, TYPES_ABSENCE, CODES_INDEMNITES_COURANTS } from './domai
 export type { JourneeQualifiee, ZoneQualifiee, ZoneIndeterminee } from './qualify/types'
 export { CODES as CODES_QUALIFICATION } from './qualify/types'
 export { qualifierJournee } from './qualify/qualifierJournee'
+
+export { tempsRemunere, CODES_PAIE } from './pay/tempsRemunere'
+export type { Semaine } from './pay/periodes'
+export {
+  periodePour,
+  periodesEntre,
+  debutDeSemaine,
+  semainesCouvrant,
+  blocsDeReference,
+  chevaucheDeuxPeriodes,
+  joursDansPeriode,
+} from './pay/periodes'
+export type { ResultatHeuresSup, HypotheseHS } from './pay/heuresSup'
+export {
+  heuresSup,
+  totalTempsRemunere,
+  validerTranches,
+  ventiler,
+  MENTION_HYPOTHESES,
+} from './pay/heuresSup'
+export type { SynthesePeriode, LigneIndemnitePeriode } from './pay/synthese'
+export { synthetiserPeriode } from './pay/synthese'
+
+export type { LigneIndemnite, IndemnitesDuJour } from './indemnites/indemnites'
+export {
+  indemnitesDuJour,
+  validerIndemnites,
+  codesRefuses,
+  CODES_INDEMNITES,
+} from './indemnites/indemnites'
+export type { SaisieIndemnite } from './domain'

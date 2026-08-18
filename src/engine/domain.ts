@@ -201,6 +201,17 @@ export type QualificationManuelle = {
   readonly type: TypeSegment
 }
 
+/**
+ * Quantité saisie à la main pour une indemnité en `quantite_manuelle` : le
+ * moteur ne peut pas la déduire, c'est le conducteur qui la connaît.
+ */
+export type SaisieIndemnite = {
+  readonly id: string
+  readonly dayId: string
+  readonly code: string
+  readonly quantite: number
+}
+
 export const CODES_INDEMNITES_COURANTS: readonly { code: string; libelle: string }[] = [
   { code: 'REPAS', libelle: 'Repas' },
   { code: 'REPAS_UNIQUE', libelle: 'Repas unique' },
