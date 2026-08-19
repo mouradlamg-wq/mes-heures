@@ -102,7 +102,7 @@ Interdit : afficher `0` ou `—` pour un `unknown`, désactiver un champ sans di
 - **Compteur** — kicker rouge, chiffre 76 px, rangée de `.tag-neutral` dessous (centièmes, repas, indemnités). Un seul par écran, en haut.
 - **Bloc horaire** — `Prise` / séparateur vertical 2 px × 26 / `Fin`, chiffres 32 px, `Amplitude` poussée à droite en 20 px. C'est le seul endroit où trois valeurs partagent une ligne.
 - **Ligne de segment** — pastille 8 × 24 px, plage horaire 13 px (colonne fixe 96 px, tabulaire), type, durée en 800 poussée à droite, filet 1 px en bas. Pastilles : encre = conduite, `--color-neutral-300` = coupure et disponibilité, `--color-accent` = autre travail, `--color-accent` + hachure = non qualifié.
-- **Pied de journée** — filet 2 px, « Temps rémunéré » + valeur en 22 px, la mention légale, puis le bouton primaire pleine largeur libellé à gauche.
+- **Pied de journée** — filet 2 px, « Temps rémunéré » + valeur en 22 px, puis la mention légale. **Aucun bouton de validation** : la saisie est enregistrée à chaque frappe, et un bouton qui ne fait rien laisserait croire qu'une journée non « validée » n'est pas comptée.
 - **Ligne d'écart** — un libellé, son tag de statut, puis trois valeurs sur une ligne : `Toi` · `Ta fiche` (encadrée 1 px : c'est la seule valeur saisie par l'utilisateur) · `Écart` poussé à droite en 22 px. Dépliable sur ses preuves. Détaillée au §11.
 - **Dépliant de preuves** — bloc `--color-surface`, kicker rouge « Comment j'arrive à … », les `CalculationStep` numérotés en 11,5 px (le résultat de chaque étape en 800), puis la ligne de sources en 10 px sur filet 1 px, et un `.btn-secondary` vers les journées concernées.
 
@@ -117,9 +117,12 @@ Ordre vertical imposé :
 3. date + tag de statut du jour ;
 4. bloc horaire prise / fin / amplitude ;
 5. filet 2 px, liste des segments, `+ Ajouter un segment` en `.btn-ghost` à la fin de la liste ;
-6. filet 2 px, pied : temps rémunéré, mention, `Valider la journée`.
+6. filet 2 px, pied : temps rémunéré, puis la mention. Rien d'autre — une journée n'a pas à être validée.
 
-- Saisie : champs numériques (`inputmode="numeric"`, `HH:mm`), **aucun sélecteur à faire défiler**. Le clavier système est le seul clavier.
+- Saisie des heures : **au choix de l'utilisateur**, réglable dans Réglages → Saisie.
+  - `selecteur` (défaut) — le sélecteur d'heure natif du téléphone ;
+  - `clavier` — quatre chiffres au pavé numérique, les deux points s'écrivent seuls.
+  Les deux produisent la même chaîne `HH:mm` : la résolution en instant et la nuit du changement d'heure restent traitées au même endroit.
 - `Dupliquer hier` et `Modèle…` accessibles depuis une journée vide, en tête de la liste de segments, avant tout champ.
 - Cible tactile minimale 44 px de haut sur toute ligne ou bouton actionnable — une ligne de segment fait 46 px, elle est cliquable sur toute sa largeur.
 - Ambiguïté DST : dialogue `.dialog` à deux choix explicites (« avant le changement d'heure » / « après »), et seulement dans ce cas. Heure inexistante : refus en une phrase sous le champ, en encre, jamais de correction automatique.
@@ -224,7 +227,7 @@ Ces phrases ne sont ni raccourcies, ni mises en accordéon, ni reléguées dans 
 
 ## 14. Interdits
 
-Coin arrondi · ombre dans un écran de saisie · couleur sur un écart (favorable ou non) · total mélangeant heures et euros · libellé de bouton centré · filet remplacé par du blanc · rouge comme couleur d'erreur ou d'écart · deux aplats rouges sur un même écran · chiffre non tabulaire · durée affichée dans une seule des deux notations · `0` ou `—` à la place d'un `unknown` · sélecteur d'heure à faire défiler · image, illustration, dégradé, emoji · icône seule pour un statut (le mot est obligatoire, l'icône est un renfort) · animation d'apparition sur un chiffre de paie.
+Coin arrondi · ombre dans un écran de saisie · couleur sur un écart (favorable ou non) · total mélangeant heures et euros · libellé de bouton centré · filet remplacé par du blanc · rouge comme couleur d'erreur ou d'écart · deux aplats rouges sur un même écran · chiffre non tabulaire · durée affichée dans une seule des deux notations · `0` ou `—` à la place d'un `unknown` · image, illustration, dégradé, emoji · icône seule pour un statut (le mot est obligatoire, l'icône est un renfort) · animation d'apparition sur un chiffre de paie.
 
 ---
 

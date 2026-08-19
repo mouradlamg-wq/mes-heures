@@ -1,21 +1,22 @@
 import { useEffect, useRef } from 'react'
 import {
-  CODES_INDEMNITES_COURANTS,
   ecrireMontantSaisie,
   ecrirePourcentageSaisie,
-  formatMontant,
   lireEntierSaisie,
   lireMontantSaisie,
   lirePourcentageSaisie,
   type Cents,
   type Minutes,
+  zoneValide,
   type ModeDecompteHS,
+  type RattachementSemaineChevauchante,
   type Settings,
 } from '../../engine'
 import { useDonnees } from '../../app/contexteDonnees'
 import { SaisieDuree } from '../composants/SaisieDuree'
 import { Sauvegarde } from '../composants/Sauvegarde'
-import { TagStatut } from '../composants/Statut'
+import { EditeurIndemnites } from '../composants/EditeurIndemnites'
+import { EditeurTranches, EditeurPaliersCoupure } from '../composants/EditeurListes'
 
 /**
  * Écran « Réglages » (DESIGN §10).
@@ -142,6 +143,75 @@ export function Reglages({
           }}
         />
 
+        {settings.modeDecompteHS !== 'periode_reference' ? null : (
+          <>
+            <ChampNombre
+              identifiant="periodeReferenceSemaines"
+              vise={reglageVise}
+              reference={cible}
+              label="Nombre de semaines du cycle"
+              aide="4 pour un cycle de quatre semaines."
+              consequence="Sans ce nombre, le cycle ne peut pas être découpé."
+              valeur={settings.periodeReferenceSemaines}
+              onChange={(valeur) => {
+                if (valeur === undefined || valeur < 1) {
+                  retirer('periodeReferenceSemaines')
+                  return
+                }
+                modifier({ periodeReferenceSemaines: valeur })
+              }}
+            />
+
+            <ChampDate
+              identifiant="periodeReferenceDebut"
+              label="Date de début du cycle"
+              aide="Le point d'ancrage : sans lui, « 4 semaines » ne désigne aucune période précise."
+              valeur={settings.periodeReferenceDebut}
+              onChange={(valeur) => {
+                if (valeur === undefined) {
+                  retirer('periodeReferenceDebut')
+                  return
+                }
+                modifier({ periodeReferenceDebut: valeur })
+              }}
+            />
+          </>
+        )}
+
+        <div className="field">
+          <span className="field-label">Semaine à cheval sur deux paies</span>
+          <div className="seg seg--colonne">
+            {(['periode_de_fin', 'periode_de_debut', 'prorata'] as const).map((regle) => (
+              <button
+                key={regle}
+                type="button"
+                aria-pressed={settings.rattachementSemaineChevauchante === regle}
+                onClick={() => {
+                  modifier({ rattachementSemaineChevauchante: regle })
+                }}
+              >
+                {libelleRattachement(regle)}
+              </button>
+            ))}
+          </div>
+          {settings.rattachementSemaineChevauchante === undefined ? (
+            <span className="field-consequence">
+              Non réglé : l’app affichera les deux hypothèses et te laissera reconnaître la
+              tienne sur ta fiche. C’est volontaire — elle ne tranche pas à ta place.
+            </span>
+          ) : (
+            <button
+              type="button"
+              className="btn btn-ghost"
+              onClick={() => {
+                retirer('rattachementSemaineChevauchante')
+              }}
+            >
+              Revenir aux deux hypothèses
+            </button>
+          )}
+        </div>
+
         <ChampMontant
           identifiant="tauxHoraireBaseCents"
           vise={reglageVise}
@@ -158,6 +228,34 @@ export function Reglages({
             modifier({ tauxHoraireBaseCents: valeur })
           }}
         />
+
+        <EditeurTranches
+          tranches={settings.tranchesHS}
+          onChanger={(tranches) => {
+            if (tranches === undefined) {
+              retirer('tranchesHS')
+              return
+            }
+            modifier({ tranchesHS: tranches })
+          }}
+        />
+
+        <label className="radio">
+          <input
+            type="checkbox"
+            checked={settings.estForfaitJours === true}
+            onChange={(evenement) => {
+              modifier({ estForfaitJours: evenement.target.checked })
+            }}
+          />
+          Je suis au forfait jours
+        </label>
+        {settings.estForfaitJours === true ? (
+          <span className="field-consequence">
+            Au forfait jours, le décompte ne se fait pas en heures : l’app ne comptera aucune
+            heure supplémentaire, et le dira.
+          </span>
+        ) : null}
       </Section>
 
       <hr className="hr-section" />
@@ -209,40 +307,58 @@ export function Reglages({
             modifier({ fractionDisponibiliteRemuneree: valeur })
           }}
         />
+
+        <EditeurPaliersCoupure
+          paliers={settings.coupuresRemunerees}
+          onChanger={(paliers) => {
+            if (paliers === undefined) {
+              retirer('coupuresRemunerees')
+              return
+            }
+            modifier({ coupuresRemunerees: paliers })
+          }}
+        />
       </Section>
 
       <hr className="hr-section" />
 
       <Section titre="Indemnités">
         <p className="mention">
-          L'app ne fournit aucun montant. Reprends-les sur ta convention ou sur une fiche de
-          paie.
+          L'app ne fournit aucun montant, aucune plage, aucun seuil. Tout se règle ici, depuis
+          ta convention ou une fiche de paie.
         </p>
-        <ul className="liste-indemnites">
-          {CODES_INDEMNITES_COURANTS.map((propose) => {
-            const configuree = settings.indemnites.find((i) => i.code === propose.code)
-            return (
-              <li key={propose.code} className="liste-indemnite">
-                <span className="liste-indemnite__libelle">
-                  {propose.libelle}
-                  <br />
-                  <span className="liste-indemnite__code">{propose.code}</span>
-                </span>
-                {configuree?.montantCents === undefined ? (
-                  <TagStatut statut="unknown" />
-                ) : (
-                  <span className="liste-indemnite__montant">
-                    {formatMontant(configuree.montantCents)}
-                  </span>
-                )}
-              </li>
-            )
-          })}
-        </ul>
-        <p className="field-consequence">
-          La configuration détaillée des indemnités (plages horaires,
-          incompatibilités) arrive à l'écran suivant. Le moteur, lui, les traite déjà.
-        </p>
+        <EditeurIndemnites />
+      </Section>
+
+      <hr className="hr-section" />
+
+      <Section titre="Mon entreprise">
+        <ChampTexte
+          identifiant="entreprise"
+          label="Nom de l'entreprise"
+          aide="Il figure en tête du relevé imprimé."
+          valeur={settings.entreprise}
+          onChange={(valeur) => {
+            if (valeur === undefined) {
+              retirer('entreprise')
+              return
+            }
+            modifier({ entreprise: valeur })
+          }}
+        />
+        <ChampTexte
+          identifiant="domicile"
+          label="Lieu de rattachement"
+          aide="Ton point de départ habituel."
+          valeur={settings.domicile}
+          onChange={(valeur) => {
+            if (valeur === undefined) {
+              retirer('domicile')
+              return
+            }
+            modifier({ domicile: valeur })
+          }}
+        />
       </Section>
 
       <hr className="hr-section" />
@@ -254,10 +370,24 @@ export function Reglages({
       <hr className="hr-section" />
 
       <Section titre="Fuseau de référence">
-        <p className="field-consequence">
-          Semaine, période et journée sont définies dans <strong>{settings.timeZoneReference}</strong>,
-          jamais dans le fuseau de ton téléphone.
-        </p>
+        <ChampTexte
+          identifiant="timeZoneReference"
+          label="Fuseau horaire"
+          aide="Semaine, période et journée y sont définies — jamais dans le fuseau de ton téléphone."
+          valeur={settings.timeZoneReference}
+          onChange={(valeur) => {
+            // Le seul réglage obligatoire : on refuse de le vider ou de le
+            // remplacer par un fuseau que le système ne connaît pas.
+            if (valeur !== undefined && zoneValide(valeur)) {
+              modifier({ timeZoneReference: valeur })
+            }
+          }}
+        />
+        {zoneValide(settings.timeZoneReference) ? null : (
+          <span className="field-consequence">
+            Ce fuseau est inconnu : plus rien ne peut être daté tant qu’il n’est pas corrigé.
+          </span>
+        )}
       </Section>
     </>
   )
@@ -404,6 +534,89 @@ function ChampFraction(proprietes: ProprietesChamp<number>): React.JSX.Element {
       />
     </Enveloppe>
   )
+}
+
+/** Champ libre : nom d'entreprise, lieu, fuseau. Vide = réglage absent. */
+function ChampTexte({
+  identifiant,
+  label,
+  aide,
+  valeur,
+  onChange,
+}: {
+  readonly identifiant: string
+  readonly label: string
+  readonly aide: string
+  readonly valeur: string | undefined
+  readonly onChange: (valeur: string | undefined) => void
+}): React.JSX.Element {
+  return (
+    <div className="field">
+      <label className="field-label" htmlFor={identifiant}>
+        {label}
+      </label>
+      <input
+        id={identifiant}
+        className="input"
+        type="text"
+        autoComplete="off"
+        value={valeur ?? ''}
+        onChange={(evenement) => {
+          const texte = evenement.target.value
+          onChange(texte.trim() === '' ? undefined : texte)
+        }}
+      />
+      <span className="field-consequence">{aide}</span>
+    </div>
+  )
+}
+
+/**
+ * Date d'ancrage. Le sélecteur natif est ici sans réserve : il s'agit d'une date
+ * unique et rare, pas d'une saisie répétée le soir.
+ */
+function ChampDate({
+  identifiant,
+  label,
+  aide,
+  valeur,
+  onChange,
+}: {
+  readonly identifiant: string
+  readonly label: string
+  readonly aide: string
+  readonly valeur: string | undefined
+  readonly onChange: (valeur: string | undefined) => void
+}): React.JSX.Element {
+  return (
+    <div className="field">
+      <label className="field-label" htmlFor={identifiant}>
+        {label}
+      </label>
+      <input
+        id={identifiant}
+        className="input"
+        type="date"
+        value={valeur ?? ''}
+        onChange={(evenement) => {
+          const texte = evenement.target.value
+          onChange(texte === '' ? undefined : texte)
+        }}
+      />
+      <span className="field-consequence">{aide}</span>
+    </div>
+  )
+}
+
+function libelleRattachement(regle: RattachementSemaineChevauchante): string {
+  switch (regle) {
+    case 'periode_de_fin':
+      return 'Sur la paie où la semaine se termine'
+    case 'periode_de_debut':
+      return 'Sur la paie où la semaine commence'
+    case 'prorata':
+      return 'Répartie au prorata des jours'
+  }
 }
 
 function libelleMode(mode: ModeDecompteHS): string {

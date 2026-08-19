@@ -140,7 +140,7 @@ export const settingsSchema = z.object({
       z.object({
         deMinutes: minutes,
         aMinutes: minutes.nullable(),
-        majorationPct: z.number(),
+        majorationPct: z.number().optional(),
       }),
     )
     .optional(),

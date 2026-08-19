@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import type { ISODate, TypeAbsence, TypeSegment } from '../engine'
+import type { IndemniteConfig, ISODate, TypeAbsence, TypeSegment } from '../engine'
 
 /**
  * Libellés d'affichage. Aucune arithmétique métier ici : uniquement de la mise
@@ -73,4 +73,17 @@ export function libelleIntervalleLong(debut: ISODate, fin: ISODate): string {
   const d = DateTime.fromISO(debut, { zone: 'utc' }).setLocale('fr')
   const f = DateTime.fromISO(fin, { zone: 'utc' }).setLocale('fr')
   return `du ${d.toFormat('d LLLL')} au ${f.toFormat('d LLLL yyyy')}`
+}
+
+export function libelleDeclencheur(declencheur: IndemniteConfig['declencheur']): string {
+  switch (declencheur) {
+    case 'plage_horaire':
+      return 'Sur une plage horaire'
+    case 'decouche':
+      return 'Quand je découche'
+    case 'duree_service':
+      return 'Selon l’amplitude'
+    case 'quantite_manuelle':
+      return 'Que je saisis moi-même'
+  }
 }

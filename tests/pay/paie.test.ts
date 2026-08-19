@@ -496,6 +496,43 @@ describe('PAI — heures supplémentaires', () => {
     expect(validerTranches(TRANCHES).ok).toBe(true)
   })
 
+  it('PAI-43 — une majoration non renseignée ne vaut pas 0 %', () => {
+    // Une tranche fraîchement ajoutée dans les réglages, dont le taux n'a pas
+    // encore été saisi : la valoriser à 0 % produirait un montant faux et
+    // crédible. C'est exactement ce que le SPEC §0 interdit.
+    const sansTaux: readonly TrancheHS[] = [{ deMinutes: minutes(0), aMinutes: null }]
+
+    const r = heuresSup(
+      serie(LUNDI, 5, 468),
+      hebdo({ tauxHoraireBaseCents: cents(1300), tranchesHS: sansTaux }),
+      SEMAINE,
+    )
+
+    expect(r.duree.status).toBe('complete')
+    expect(r.duree.value).toBe(4 * 60)
+    expect(r.valorisation.status).toBe('unknown')
+    expect(r.valorisation.value).toBeUndefined()
+    expect(r.valorisation.warnings.at(-1)?.reglageManquant).toBe('tranchesHS')
+  })
+
+  it('PAI-43 — une tranche non atteinte ne bloque rien', () => {
+    // Le taux manque, mais sur une tranche que les 4 h sup n'atteignent pas :
+    // le montant reste calculable.
+    const tranches: readonly TrancheHS[] = [
+      { deMinutes: minutes(0), aMinutes: minutes(480), majorationPct: 25 },
+      { deMinutes: minutes(480), aMinutes: null },
+    ]
+
+    const r = heuresSup(
+      serie(LUNDI, 5, 468),
+      hebdo({ tauxHoraireBaseCents: cents(1300), tranchesHS: tranches }),
+      SEMAINE,
+    )
+
+    expect(r.valorisation.status).toBe('complete')
+    expect(r.valorisation.value).toBe(6500)
+  })
+
   it('PAI-35 — semaine partielle : heures sup partial avec range, jamais une valeur unique', () => {
     const incomplete = journeeDe({
       date: LUNDI,

@@ -80,6 +80,8 @@ export {
   lirePourcentageSaisie,
   ecrirePourcentageSaisie,
   lireEntierSaisie,
+  lirePourcentageDirect,
+  ecrirePourcentageDirect,
 } from './primitives/saisie'
 export type { LectureInstant } from './time/instant'
 export {

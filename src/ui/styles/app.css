@@ -772,3 +772,65 @@
   line-height: 1.45;
   margin: 0 0 var(--space-2);
 }
+
+/* ————————————————————————————————————————————————————————
+ * Réglages — listes éditables
+ * ———————————————————————————————————————————————————————— */
+
+/* Un segmenté à quatre options ne tient pas sur une ligne de téléphone. */
+.seg--colonne {
+  flex-direction: column;
+}
+
+.seg--colonne > button + button {
+  border-left: 0;
+  border-top: var(--filet-ligne) solid var(--color-divider);
+}
+
+.liste-indemnite__bouton {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: var(--cible-tactile);
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.liste-reglages {
+  list-style: none;
+  margin: 0 0 var(--space-2);
+  padding: 0;
+}
+
+.ligne-reglage {
+  padding: var(--space-3) 0;
+  border-bottom: var(--filet-ligne) solid var(--color-divider);
+}
+
+.ligne-reglage__texte {
+  display: block;
+  font-size: 13px;
+  font-weight: 800;
+  margin-bottom: var(--space-2);
+}
+
+.ligne-reglage__champs {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.input--court {
+  width: 6em;
+}
+
+.cases {
+  display: flex;
+  flex-direction: column;
+}

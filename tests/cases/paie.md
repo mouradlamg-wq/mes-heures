@@ -39,6 +39,7 @@ Source : SPEC §3, §7, §13 « Paie ». Seul `tempsRemunere` alimente la paie e
 | PAI-32 | `tranchesHS` absent | heures sup en **durée** `complete`, valorisation en **euros** `unknown` |
 | PAI-33 | `tauxHoraireBaseCents` absent | valorisation `unknown`, la durée reste `complete` |
 | PAI-34 | Tranches non contiguës ou qui se chevauchent (réglage incohérent) | refus explicite du réglage, pas de calcul silencieux |
+| PAI-43 | Tranche atteinte dont la majoration n'est pas renseignée | montant `unknown` nommant le réglage — une majoration absente ne vaut **pas** 0 %. La durée, elle, reste `complete` |
 | PAI-35 | Semaine `partial` (zone non qualifiée) | heures sup `partial` avec `range`, jamais une valeur unique |
 | PAI-36 | Semaine à cheval, réglage de rattachement absent (PER-15) | deux jeux d'heures sup, un par hypothèse |
 | PAI-37 | Valorisation : 4 h sup à 13,00 €/h majorées de 25 % | 65,00 € — un seul arrondi, en sortie |

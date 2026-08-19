@@ -44,7 +44,7 @@ export const CLES_META = {
  */
 export type ModeSaisieHeure = 'clavier' | 'selecteur'
 
-export const MODE_SAISIE_PAR_DEFAUT: ModeSaisieHeure = 'clavier'
+export const MODE_SAISIE_PAR_DEFAUT: ModeSaisieHeure = 'selecteur'
 
 export class BaseMesHeures extends Dexie {
   declare settings: EntityTable<SettingsRow, 'id'>

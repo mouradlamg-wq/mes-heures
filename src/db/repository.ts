@@ -176,7 +176,10 @@ export class Repository {
    */
   async lireModeSaisieHeure(): Promise<ModeSaisieHeure> {
     const ligne = await this.base.meta.get(CLES_META.MODE_SAISIE_HEURE)
-    return ligne?.valeur === 'selecteur' ? 'selecteur' : MODE_SAISIE_PAR_DEFAUT
+    if (ligne?.valeur === 'selecteur') {
+      return 'selecteur'
+    }
+    return ligne?.valeur === 'clavier' ? 'clavier' : MODE_SAISIE_PAR_DEFAUT
   }
 
   async ecrireModeSaisieHeure(mode: ModeSaisieHeure): Promise<void> {

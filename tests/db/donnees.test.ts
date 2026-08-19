@@ -398,16 +398,18 @@ describe('DON — Dexie, migrations, export / import', () => {
 
   it('INT-21 — le mode de saisie est une préférence d’appareil, hors export', async () => {
     await peupler()
-    expect(await repo.lireModeSaisieHeure()).toBe('clavier')
-
-    await repo.ecrireModeSaisieHeure('selecteur')
+    // Le sélecteur natif du téléphone est le mode par défaut.
     expect(await repo.lireModeSaisieHeure()).toBe('selecteur')
+
+    // Le choix inverse se conserve, et ne retombe pas sur le défaut.
+    await repo.ecrireModeSaisieHeure('clavier')
+    expect(await repo.lireModeSaisieHeure()).toBe('clavier')
 
     // Il ne fait pas partie des réglages métier, donc il ne part pas dans le
     // fichier : le clavier d'une tablette n'est pas celui d'un téléphone.
     const fichier = await exporter(base, MAINTENANT)
     expect(JSON.stringify(fichier)).not.toContain('modeSaisieHeure')
-    expect(JSON.stringify(fichier)).not.toContain('selecteur')
+    expect(JSON.stringify(fichier)).not.toContain('clavier')
   })
 })
 

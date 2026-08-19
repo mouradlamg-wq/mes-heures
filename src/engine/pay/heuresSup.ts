@@ -526,12 +526,34 @@ function valoriser(
     return unknown<Cents>(validation.raison, { warnings: duree.warnings })
   }
 
+  // Une tranche dont la majoration n'est pas renseignée ne vaut pas « 0 % » :
+  // elle ne vaut rien de connu. Tant qu'elle est atteinte, le montant reste
+  // incalculable — la durée, elle, est déjà acquise.
+  const sansTaux = ventiler(bornes(duree)?.max ?? ZERO_MINUTES, validation.tranches).find(
+    (part) => part.majorationPct === undefined,
+  )
+  if (sansTaux !== undefined) {
+    return unknown<Cents>(
+      {
+        code: CODES_PAIE.TRANCHES_ABSENTES,
+        message:
+          "Une tranche de majoration atteinte n'a pas de taux renseigné : la durée de tes heures supplémentaires est connue, mais pas ce qu'elles valent.",
+        reglageManquant: 'tranchesHS',
+      },
+      { warnings: duree.warnings },
+    )
+  }
+
   const steps: CalculationStep[] = []
 
   // Une tranche = une ligne de fiche de paie, donc un arrondi par tranche : ce
   // n'est pas un arrondi en cascade, c'est la granularité réelle du bulletin.
   const montant = (total: Minutes, tracer: boolean): number =>
     ventiler(total, validation.tranches).reduce<number>((somme, part) => {
+      /* c8 ignore next 3 — les tranches sans taux ont été écartées au-dessus. */
+      if (part.majorationPct === undefined) {
+        return somme
+      }
       const ligne = valoriserMajore(part.duree, taux, part.majorationPct)
       if (tracer) {
         steps.push({
@@ -564,8 +586,8 @@ function valoriser(
 export function ventiler(
   total: Minutes,
   tranches: readonly TrancheHS[],
-): readonly { duree: Minutes; majorationPct: number }[] {
-  const parts: { duree: Minutes; majorationPct: number }[] = []
+): readonly { duree: Minutes; majorationPct: number | undefined }[] {
+  const parts: { duree: Minutes; majorationPct: number | undefined }[] = []
   for (const tranche of tranches) {
     const haut = tranche.aMinutes === null ? total : Math.min(total, tranche.aMinutes)
     const duree = haut - tranche.deMinutes

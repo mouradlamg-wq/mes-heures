@@ -120,7 +120,12 @@ export type TrancheHS = {
   readonly deMinutes: Minutes
   /** `null` = tranche ouverte, la dernière. */
   readonly aMinutes: Minutes | null
-  readonly majorationPct: number
+  /**
+   * Absente = **non renseignée, pas zéro** (SPEC §0 règle 3). La durée des
+   * heures supplémentaires reste calculée ; c'est leur montant qui devient
+   * incalculable, et l'app dit laquelle manque.
+   */
+  readonly majorationPct?: number
 }
 
 export type PalierCoupure = {

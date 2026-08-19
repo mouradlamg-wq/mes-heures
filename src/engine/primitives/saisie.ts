@@ -74,3 +74,20 @@ export function lireEntierSaisie(texte: string): number | undefined {
   const chiffres = texte.replace(/\D/g, '')
   return chiffres === '' ? undefined : Number(chiffres)
 }
+
+/**
+ * Pourcentage saisi **tel quel**, sans conversion en fraction : `'25'` → 25.
+ *
+ * Distinct de `lirePourcentageSaisie`, qui rend `0,25`. Les deux existent parce
+ * que le modèle porte les deux formes — `majorationPct` est un pourcentage,
+ * `fraction` est une fraction — et qu'aucune des deux conversions n'a le droit
+ * de vivre dans un composant (CLAUDE.md §4).
+ */
+export function lirePourcentageDirect(texte: string): number | undefined {
+  const chiffres = texte.replace(/\D/g, '').slice(0, 4)
+  return chiffres === '' ? undefined : Number(chiffres)
+}
+
+export function ecrirePourcentageDirect(pourcentage: number): string {
+  return String(Math.trunc(pourcentage))
+}
