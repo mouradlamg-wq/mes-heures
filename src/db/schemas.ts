@@ -174,7 +174,13 @@ export const payCheckSchema = z.object({
   heuresPayeesCentiemes: z.number().optional(),
   heuresSupPayees: z.number().optional(),
   indemnitesPayees: z
-    .array(z.object({ code: z.string(), quantite: z.number() }))
+    .array(
+      z.object({
+        code: z.string(),
+        quantite: z.number().optional(),
+        montantCents: cents.optional(),
+      }),
+    )
     .optional(),
   brutCents: cents.optional(),
 })

@@ -178,14 +178,26 @@ export type DayTemplate = {
   readonly decoucheParDefaut?: boolean
 }
 
-/** Ce que le conducteur relève sur sa fiche de paie, pour comparaison. */
+/**
+ * Ce que le conducteur relève sur sa fiche de paie, pour comparaison.
+ *
+ * Rien n'est obligatoire : on compare ce qui a été recopié, et rien d'autre.
+ * Une ligne non renseignée n'est pas un écart de zéro, c'est une ligne non
+ * comparée.
+ */
 export type PayCheck = {
   readonly id: string
   readonly payPeriodId: string
   /** Les fiches françaises sont en centièmes : on stocke ce qui est écrit. */
   readonly heuresPayeesCentiemes?: number
+  /** Idem : les heures supplémentaires figurent en centièmes sur la fiche. */
   readonly heuresSupPayees?: number
-  readonly indemnitesPayees?: readonly { readonly code: string; readonly quantite: number }[]
+  readonly indemnitesPayees?: readonly {
+    readonly code: string
+    readonly quantite?: number
+    /** Une fiche porte souvent la quantité **et** le montant de la ligne. */
+    readonly montantCents?: Cents
+  }[]
   readonly brutCents?: Cents
 }
 

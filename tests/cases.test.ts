@@ -16,7 +16,7 @@ const RACINE = fileURLToPath(new URL('..', import.meta.url))
 const CASES = join(RACINE, 'tests', 'cases')
 const TESTS = join(RACINE, 'tests')
 
-const RE_IDENTIFIANT = /\b(TPS|NUM|PRV|QUA|PER|PAI|IND|DON|ARC|INT|SEM)-(\d{2})\b/g
+const RE_IDENTIFIANT = /\b(TPS|NUM|PRV|QUA|PER|PAI|IND|DON|ARC|INT|SEM|ECA)-(\d{2})\b/g
 
 /**
  * Lignes de la table qui n'ont pas encore de test, avec la phase qui les
@@ -26,9 +26,6 @@ const RE_IDENTIFIANT = /\b(TPS|NUM|PRV|QUA|PER|PAI|IND|DON|ARC|INT|SEM)-(\d{2})\
 const A_COUVRIR_PLUS_TARD: Readonly<Record<string, string>> = {
   ...report('ARC-08', 'phase 7 — src/pdf n’existe pas encore'),
   ...report('ARC-16', 'phase 3 — contrôle des signatures publiques du moteur'),
-  ...report('PAI-40', 'phase 7 — écran Vérifier ma paie'),
-  ...report('PAI-41', 'phase 7 — idem'),
-  ...report('PAI-42', 'phase 7 — idem'),
 }
 
 function report(id: string, raison: string): Record<string, string> {
@@ -60,7 +57,7 @@ const fichiersTest = (await fichiersSous(TESTS, /\.test\.tsx?$/)).filter(
 const declares = new Set<string>()
 for (const fichier of fichiersTable) {
   for (const ligne of readFileSync(fichier, 'utf8').split('\n')) {
-    const m = /^\|\s*((?:TPS|NUM|PRV|QUA|PER|PAI|IND|DON|ARC|INT|SEM)-\d{2})\s*\|/.exec(ligne)
+    const m = /^\|\s*((?:TPS|NUM|PRV|QUA|PER|PAI|IND|DON|ARC|INT|SEM|ECA)-\d{2})\s*\|/.exec(ligne)
     if (m !== null) {
       declares.add(m[1]!)
     }
@@ -116,7 +113,7 @@ describe('Table de cas limites', () => {
     for (const fichier of fichiersTable) {
       const nom = relative(RACINE, fichier).split(sep).join('/')
       for (const ligne of readFileSync(fichier, 'utf8').split('\n')) {
-        const m = /^\|\s*((?:TPS|NUM|PRV|QUA|PER|PAI|IND|DON|ARC|INT|SEM)-\d{2})\s*\|/.exec(ligne)
+        const m = /^\|\s*((?:TPS|NUM|PRV|QUA|PER|PAI|IND|DON|ARC|INT|SEM|ECA)-\d{2})\s*\|/.exec(ligne)
         if (m !== null) {
           compte.set(m[1]!, [...(compte.get(m[1]!) ?? []), nom])
         }

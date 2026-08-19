@@ -564,3 +564,157 @@
 .btn-pleine {
   width: 100%;
 }
+
+/* ————————————————————————————————————————————————————————
+ * Écran « Vérifier ma paie » (DESIGN §11)
+ *
+ * Le visuel est froid : aucune couleur d'alarme. L'écart se lit en encre,
+ * avec son signe — un écart favorable et un écart défavorable ont exactement
+ * le même traitement.
+ * ———————————————————————————————————————————————————————— */
+
+.ecart-mention {
+  padding-top: var(--space-3);
+  padding-bottom: var(--space-3);
+}
+
+.ecarts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ecart {
+  border-bottom: var(--filet-ligne) solid var(--color-divider);
+}
+
+.ecart__corps {
+  padding: var(--space-4);
+}
+
+.ecart__entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-bottom: var(--space-3);
+}
+
+.ecart__corps .ecart__entete {
+  padding: 0 0 var(--space-3);
+}
+
+.ecart__libelle {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.ecart__valeurs {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-4);
+}
+
+.ecart__colonne {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+/* L'écart est poussé à droite : c'est la valeur qu'on vient chercher. */
+.ecart__colonne--ecart {
+  margin-left: auto;
+  align-items: flex-end;
+}
+
+.ecart__valeur {
+  font-size: 17px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.ecart__valeur--ecart {
+  font-size: 20px;
+}
+
+/* La seule valeur saisie par l'utilisateur sur cet écran : elle est encadrée. */
+.ecart__fiche {
+  min-height: 36px;
+  width: 6.5em;
+  font-size: 17px;
+  padding: var(--space-1) var(--space-2);
+}
+
+/* Le dépliage a son propre bouton, en pleine largeur et à la cible tactile :
+   il ne peut pas être la ligne entière, qui contient un champ de saisie. */
+.ecart__depliant {
+  display: block;
+  width: 100%;
+  min-height: var(--cible-tactile);
+  border: 0;
+  border-top: var(--filet-ligne) solid var(--color-divider);
+  background: transparent;
+  padding: var(--space-2) var(--space-4);
+  font-size: 11px;
+  color: var(--color-text-55);
+  text-align: left;
+  cursor: pointer;
+}
+
+.ecart--partielle .ecart__valeur {
+  font-size: 15px;
+}
+
+.ecart--incalculable .incalculable {
+  margin: var(--space-3) var(--space-4) var(--space-4);
+}
+
+/* ————————————————————————————————————————————————————————
+ * Dépliant de preuves (DESIGN §7)
+ * ———————————————————————————————————————————————————————— */
+
+.preuves {
+  background: var(--color-surface);
+  padding: var(--space-4);
+}
+
+.preuves__etapes {
+  list-style: none;
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  counter-reset: etape;
+}
+
+.preuves__etape {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-bottom: var(--filet-ligne) solid var(--color-divider);
+  font-size: 11.5px;
+}
+
+.preuves__etape::before {
+  counter-increment: etape;
+  content: counter(etape) '.';
+  flex: 0 0 auto;
+  color: var(--color-text-55);
+}
+
+.preuves__label {
+  flex: 1 1 auto;
+  font-weight: 800;
+}
+
+.preuves__detail {
+  flex: 0 1 auto;
+  text-align: right;
+  color: var(--color-text-55);
+}
+
+.preuves__sources,
+.preuves__jours {
+  font-size: 10px;
+  color: var(--color-text-50);
+  margin: var(--space-2) 0 0;
+}

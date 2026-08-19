@@ -2,16 +2,19 @@ import { useState } from 'react'
 import type { ISODate } from '../engine'
 import { Aujourdhui } from '../ui/ecrans/Aujourdhui'
 import { MaPeriode } from '../ui/ecrans/MaPeriode'
+import { VerifierMaPaie } from '../ui/ecrans/VerifierMaPaie'
 import { Reglages } from '../ui/ecrans/Reglages'
 
 type Ecran =
   | { readonly nom: 'aujourdhui'; readonly date?: ISODate }
   | { readonly nom: 'periode' }
+  | { readonly nom: 'paie' }
   | { readonly nom: 'reglages'; readonly vise?: string }
 
 const ONGLETS = [
   { nom: 'aujourdhui', libelle: 'Ma journée' },
   { nom: 'periode', libelle: 'Ma période' },
+  { nom: 'paie', libelle: 'Ma paie' },
   { nom: 'reglages', libelle: 'Réglages' },
 ] as const
 
@@ -42,7 +45,6 @@ export function App(): React.JSX.Element {
             </button>
           ))}
         </nav>
-        <span className="barre-app__titre">Mes Heures</span>
       </div>
 
       {ecran.nom === 'aujourdhui' ? (
@@ -65,7 +67,19 @@ export function App(): React.JSX.Element {
             )
           }}
           onVerifierPaie={() => {
-            // Écran « Vérifier ma paie » : phase 7.
+            setEcran({ nom: 'paie' })
+          }}
+        />
+      ) : ecran.nom === 'paie' ? (
+        <VerifierMaPaie
+          onOuvrirReglages={(reglage) => {
+            setEcran(
+              reglage === undefined ? { nom: 'reglages' } : { nom: 'reglages', vise: reglage },
+            )
+          }}
+          onEditerReleve={() => {
+            // Relevé imprimable : la vue s'ouvre dans la même page.
+            globalThis.print()
           }}
         />
       ) : (
