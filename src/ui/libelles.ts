@@ -64,3 +64,13 @@ export function libelleAbsence(type: TypeAbsence): string {
 function majuscule(mot: string): string {
   return mot.charAt(0).toUpperCase() + mot.slice(1)
 }
+
+/**
+ * `du 1 août au 31 août 2026` — pour un document imprimé, remis à quelqu'un.
+ * Une date ISO brute y serait illisible.
+ */
+export function libelleIntervalleLong(debut: ISODate, fin: ISODate): string {
+  const d = DateTime.fromISO(debut, { zone: 'utc' }).setLocale('fr')
+  const f = DateTime.fromISO(fin, { zone: 'utc' }).setLocale('fr')
+  return `du ${d.toFormat('d LLLL')} au ${f.toFormat('d LLLL yyyy')}`
+}

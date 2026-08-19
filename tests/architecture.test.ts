@@ -167,6 +167,27 @@ describe('ARC — pureté du moteur et règle des dépendances', () => {
     }
   })
 
+  it('ARC-08 — src/pdf ne contient aucune arithmétique métier', () => {
+    // Le relevé remis à un employeur doit dire exactement ce que dit l'écran.
+    // La seule façon de le garantir est qu'il ne calcule rien : il met en page
+    // une sortie moteur déjà produite (SPEC §2).
+    const gabarits = tousLesFichiers.filter((f) => court(f).startsWith('src/pdf/'))
+    expect(gabarits.length).toBeGreaterThan(0)
+
+    for (const fichier of gabarits) {
+      const code = codeSeul(lire(fichier))
+      expect(code, court(fichier)).not.toMatch(/[*/]\s*(60|100|1000|3600)\b/)
+      expect(code, court(fichier)).not.toMatch(/\b(60|100)\s*[*/]/)
+      expect(code, court(fichier)).not.toMatch(
+        /\b(duree|montant|amplitude|tempsRemunere|heuresSup|total|ecart)\w*\s*[+\-*/]\s*\w/,
+      )
+      expect(code, court(fichier)).not.toMatch(/\btoFixed\s*\(/)
+      // Ni Dexie, ni horloge : il reçoit tout par ses propriétés.
+      expect(imports(lire(fichier)), court(fichier)).not.toContain('dexie')
+      expect(code, court(fichier)).not.toMatch(/\bDate\.now\s*\(|\bnew\s+Date\s*\(\s*\)/)
+    }
+  })
+
   it('ARC-13 — hors du moteur, on n’importe que sa surface publique', () => {
     const consommateurs = tousLesFichiers.filter((f) =>
       /^src\/(ui|pdf|app|db)\//.test(court(f)),

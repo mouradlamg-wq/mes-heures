@@ -3,12 +3,14 @@ import type { ISODate } from '../engine'
 import { Aujourdhui } from '../ui/ecrans/Aujourdhui'
 import { MaPeriode } from '../ui/ecrans/MaPeriode'
 import { VerifierMaPaie } from '../ui/ecrans/VerifierMaPaie'
+import { EcranReleve } from '../ui/ecrans/EcranReleve'
 import { Reglages } from '../ui/ecrans/Reglages'
 
 type Ecran =
   | { readonly nom: 'aujourdhui'; readonly date?: ISODate }
   | { readonly nom: 'periode' }
   | { readonly nom: 'paie' }
+  | { readonly nom: 'releve'; readonly ancre: ISODate }
   | { readonly nom: 'reglages'; readonly vise?: string }
 
 const ONGLETS = [
@@ -77,9 +79,15 @@ export function App(): React.JSX.Element {
               reglage === undefined ? { nom: 'reglages' } : { nom: 'reglages', vise: reglage },
             )
           }}
-          onEditerReleve={() => {
-            // Relevé imprimable : la vue s'ouvre dans la même page.
-            globalThis.print()
+          onEditerReleve={(debut) => {
+            setEcran({ nom: 'releve', ancre: debut })
+          }}
+        />
+      ) : ecran.nom === 'releve' ? (
+        <EcranReleve
+          ancre={ecran.ancre}
+          onFermer={() => {
+            setEcran({ nom: 'paie' })
           }}
         />
       ) : (

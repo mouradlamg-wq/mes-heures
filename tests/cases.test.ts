@@ -24,7 +24,6 @@ const RE_IDENTIFIANT = /\b(TPS|NUM|PRV|QUA|PER|PAI|IND|DON|ARC|INT|SEM|ECA)-(\d{
  * critère de fin, et elle est relue à chaque rapport de phase.
  */
 const A_COUVRIR_PLUS_TARD: Readonly<Record<string, string>> = {
-  ...report('ARC-08', 'phase 7 — src/pdf n’existe pas encore'),
   ...report('ARC-16', 'phase 3 — contrôle des signatures publiques du moteur'),
 }
 

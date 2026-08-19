@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import '../ui/styles/modernist.css'
 import '../ui/styles/app.css'
+import '../pdf/impression.css'
 import { App } from './App'
 import { FournisseurDonnees } from './donnees'
 

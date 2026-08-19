@@ -1,0 +1,168 @@
+/*
+ * Relevé imprimable.
+ *
+ * Noir sur blanc, filets et alignement — la direction « Modernist » se traduit
+ * directement sur le papier, où la couleur ne survivrait de toute façon pas :
+ * les navigateurs n'impriment pas les fonds par défaut, et une imprimante de
+ * bureau ne rend pas un aplat rouge.
+ */
+
+.releve {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-4);
+  font-family: var(--font-body);
+  color: var(--color-text);
+}
+
+.releve__entete {
+  border-bottom: var(--filet-section) solid var(--color-divider);
+  padding-bottom: var(--space-3);
+}
+
+.releve__titre {
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.releve__bornes {
+  font-size: 11px;
+  color: var(--color-text-55);
+  margin: var(--space-1) 0 0;
+}
+
+.releve__synthese {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+  padding: var(--space-4) 0;
+  border-bottom: var(--filet-section) solid var(--color-divider);
+}
+
+.releve__poste {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.releve__poste-libelle {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--color-text-55);
+}
+
+.releve__poste-valeur {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.releve__section {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  margin: var(--space-6) 0 var(--space-2);
+}
+
+.releve__mention {
+  font-size: 10px;
+  line-height: 1.45;
+  color: var(--color-text-55);
+  margin: var(--space-3) 0 0;
+}
+
+.releve__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.releve__table thead th {
+  border-bottom: var(--filet-section) solid var(--color-divider);
+  padding: var(--space-2) var(--space-2) var(--space-2) 0;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--color-text-55);
+  text-align: right;
+}
+
+.releve__table thead th:first-child,
+.releve__table th[scope='row'] {
+  text-align: left;
+}
+
+.releve__table th[scope='row'] {
+  font-weight: 400;
+}
+
+.releve__table td,
+.releve__table th {
+  border-bottom: var(--filet-ligne) solid var(--color-divider);
+  padding: var(--space-2) var(--space-2) var(--space-2) 0;
+  text-align: right;
+}
+
+.releve__table td {
+  font-weight: 800;
+}
+
+.releve__pied {
+  margin-top: var(--space-6);
+  padding-top: var(--space-3);
+  border-top: var(--filet-ligne) solid var(--color-divider);
+  font-size: 10px;
+  color: var(--color-text-55);
+}
+
+/* Barre d'actions à l'écran, absente du papier. */
+.releve-actions {
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: var(--filet-section) solid var(--color-divider);
+}
+
+@media print {
+  /* Le papier est blanc : on force l'encre, quel que soit le thème de
+     l'appareil au moment de l'impression. */
+  :root {
+    --color-bg: #ffffff;
+    --color-surface: #ffffff;
+    --color-text: #000000;
+    --color-divider: #999999;
+  }
+
+  .releve-actions,
+  .barre-app {
+    display: none;
+  }
+
+  .ecran {
+    max-width: none;
+    min-height: 0;
+  }
+
+  .releve {
+    padding: 0;
+    max-width: none;
+  }
+
+  /* Une journée ne se coupe pas au milieu d'une page. */
+  .releve__table tr {
+    break-inside: avoid;
+  }
+
+  .releve__table thead {
+    display: table-header-group;
+  }
+
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+}
