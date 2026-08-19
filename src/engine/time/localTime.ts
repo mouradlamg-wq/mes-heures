@@ -159,8 +159,21 @@ export function validerHeureHorloge(
   return { status: 'ok' }
 }
 
+/**
+ * Écrit un instant sous la forme que le stockage accepte.
+ *
+ * **Tronqué à la minute**, parce que `lireInstant` refuse les secondes et les
+ * millisecondes (SPEC §10 : la saisie est à la minute). Sans cette troncature,
+ * l'app produirait à partir de l'horloge courante des instants qu'elle
+ * refuserait elle-même de relire — c'est ce qui faisait qu'une sauvegarde
+ * venait d'être faite et que l'écran annonçait « jamais exporté ».
+ *
+ * Les instants métier sont déjà à la minute : la troncature n'a d'effet que sur
+ * l'horloge.
+ */
 export function formatInstant(instantMillis: number, nomZone: string): ISODateTime {
-  const iso = DateTime.fromMillis(instantMillis, { zone: nomZone }).toISO({
+  const alaMinute = instantMillis - (((instantMillis % 60_000) + 60_000) % 60_000)
+  const iso = DateTime.fromMillis(alaMinute, { zone: nomZone }).toISO({
     suppressMilliseconds: true,
   })
   /* c8 ignore next 3 — un instant fini dans une zone valide produit toujours un ISO. */

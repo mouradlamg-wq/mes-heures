@@ -14,6 +14,7 @@ import {
 } from '../../engine'
 import { useDonnees } from '../../app/contexteDonnees'
 import { SaisieDuree } from '../composants/SaisieDuree'
+import { Sauvegarde } from '../composants/Sauvegarde'
 import { TagStatut } from '../composants/Statut'
 
 /**
@@ -242,6 +243,12 @@ export function Reglages({
           La configuration détaillée des indemnités (plages horaires,
           incompatibilités) arrive à l'écran suivant. Le moteur, lui, les traite déjà.
         </p>
+      </Section>
+
+      <hr className="hr-section" />
+
+      <Section titre="Sauvegarde">
+        <Sauvegarde />
       </Section>
 
       <hr className="hr-section" />

@@ -4,6 +4,7 @@ import { Aujourdhui } from '../ui/ecrans/Aujourdhui'
 import { MaPeriode } from '../ui/ecrans/MaPeriode'
 import { VerifierMaPaie } from '../ui/ecrans/VerifierMaPaie'
 import { EcranReleve } from '../ui/ecrans/EcranReleve'
+import { BandeauApp } from '../ui/composants/BandeauApp'
 import { Reglages } from '../ui/ecrans/Reglages'
 
 type Ecran =
@@ -98,6 +99,7 @@ export function App(): React.JSX.Element {
           }}
         />
       )}
+      <BandeauApp />
     </main>
   )
 }

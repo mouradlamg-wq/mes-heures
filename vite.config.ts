@@ -45,6 +45,25 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    rolldownOptions: {
+      output: {
+        // Luxon et Dexie changent bien moins souvent que l'app : les isoler
+        // évite de refaire télécharger 300 ko à chaque mise à jour, ce qui
+        // compte quand la mise à jour se fait sur le parking, en 4G.
+        manualChunks: (id: string) => {
+          if (id.includes('node_modules/luxon')) {
+            return 'luxon'
+          }
+          if (id.includes('node_modules/dexie')) {
+            return 'dexie'
+          }
+          return undefined
+        },
+      },
+    },
+  },
+
   test: {
     globals: false,
     environment: 'node',

@@ -3,6 +3,7 @@ import {
   comparerInstants,
   decalerDate,
   dureeEntre,
+  formatInstant,
   jourDeSemaine,
   jourDeService,
   joursEntreDates,
@@ -198,6 +199,26 @@ describe('TPS — temps, fuseau, DST, journée de service', () => {
   it('TPS-21 — un instant à 00:00 pile appartient au jour qui commence', () => {
     expect(jourDeService(instantOk('2027-03-16', '00:00'), PARIS)).toBe('2027-03-16')
     expect(jourDeService(instantOk('2027-03-15', '23:59'), PARIS)).toBe('2027-03-15')
+  })
+
+  it('TPS-23 — tout instant produit est relisible, y compris depuis l’horloge', () => {
+    // Le bug que ce test verrouille : l'horloge courante porte des
+    // millisecondes, `formatInstant` les gardait, et `lireInstant` les refusait.
+    // L'app enregistrait donc une date de sauvegarde qu'elle relisait ensuite
+    // comme absente — et annonçait « jamais exporté » juste après un export.
+    const avecMillisecondes = Date.UTC(2027, 2, 16, 8, 30, 27, 706)
+
+    const ecrit = formatInstant(avecMillisecondes, PARIS)
+    expect(lireInstant(ecrit).status).toBe('ok')
+    expect(ecrit).toBe('2027-03-16T09:30:00+01:00')
+
+    // Et sur des instants métier, déjà à la minute, rien ne change.
+    for (const iso of [instantOk('2027-03-16', '08:00'), instantOk(RECUL, '01:59')]) {
+      const millis = lireInstant(iso)
+      expect(millis.status).toBe('ok')
+      if (millis.status !== 'ok') continue
+      expect(formatInstant(millis.millis, PARIS)).toBe(iso)
+    }
   })
 
   it('TPS-22 — une zone sans changement d’heure ne produit ni ambiguïté ni refus', () => {

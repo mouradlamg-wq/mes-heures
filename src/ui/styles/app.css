@@ -718,3 +718,57 @@
   color: var(--color-text-50);
   margin: var(--space-2) 0 0;
 }
+
+/* ————————————————————————————————————————————————————————
+ * Sauvegarde (DESIGN §10)
+ * ———————————————————————————————————————————————————————— */
+
+.sauvegarde__etat {
+  font-size: 13px;
+  line-height: 1.45;
+  margin: 0 0 var(--space-3);
+}
+
+/*
+ * Passé trente jours, la ligne passe en aplat d'accent. C'est le **seul** usage
+ * d'alerte du rouge dans toute l'app, et il porte sur la perte de données —
+ * jamais sur un calcul, jamais sur un écart de paie (DESIGN §3, §10).
+ */
+.sauvegarde--alerte,
+.sauvegarde--jamais {
+  background: var(--color-accent);
+  color: var(--color-sur-accent);
+  padding: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+.sauvegarde--alerte .field-consequence,
+.sauvegarde--jamais .field-consequence {
+  color: var(--color-sur-accent);
+}
+
+.sauvegarde__fichier {
+  display: none;
+}
+
+.sauvegarde__details {
+  font-size: 11px;
+  margin: var(--space-2) 0 0;
+  padding-left: var(--space-4);
+}
+
+/* ————————————————————————————————————————————————————————
+ * Bandeau d'annonce — mise à jour, installation
+ * ———————————————————————————————————————————————————————— */
+
+.bandeau {
+  border-top: var(--filet-section) solid var(--color-divider);
+  background: var(--color-surface);
+  padding: var(--space-3) var(--space-4);
+}
+
+.bandeau__texte {
+  font-size: 12px;
+  line-height: 1.45;
+  margin: 0 0 var(--space-2);
+}

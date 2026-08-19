@@ -26,6 +26,7 @@ tests exécutés sous `TZ=America/New_York` (CLAUDE.md §8).
 | TPS-19 | `finService` égale à `priseService` | amplitude 0, `complete` (une journée annulée sur place est un cas réel) |
 | TPS-20 | Deux instants identiques exprimés avec des offsets différents (`+01:00` / `+02:00` pointant le même moment) | reconnus égaux, la comparaison porte sur l'instant absolu |
 | TPS-21 | `jourDeService(instant, zone)` sur un instant à `00:00` pile | rattaché au jour qui commence, jamais au précédent |
+| TPS-23 | Tout instant produit par `formatInstant` est relisible par `lireInstant` | y compris depuis l'horloge courante, qui porte des millisecondes : l'app ne produit jamais un instant qu'elle refuse |
 | TPS-22 | Zone de référence autre qu'`Europe/Paris` (`'Indian/Reunion'`, sans DST) | aucun cas ambigu ni invalide sur l'année |
 
 ## Non couvert volontairement
