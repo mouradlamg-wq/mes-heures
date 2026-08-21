@@ -386,6 +386,13 @@ button {
   margin-top: var(--space-1);
 }
 
+/* Saisie qui ne peut pas aboutir — jamais de rouge d'alarme (DESIGN §3), mais
+   distincte du gris neutre d'une simple indication. */
+.field-consequence--alerte {
+  color: var(--color-accent-kicker);
+  font-weight: 700;
+}
+
 .field-source {
   display: block;
   font-size: 10px;

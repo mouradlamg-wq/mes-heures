@@ -49,8 +49,12 @@ export function SaisieDuree({
         placeholder="--:--"
         value={saisie}
         onBlur={() => {
-          // À la sortie du champ, l'affichage reprend la forme du moteur.
-          setSaisie(canonique)
+          // Une saisie invalide reste affichée telle quelle : la remplacer par
+          // le dernier préfixe valide enregistré ferait apparaître un nombre
+          // différent de celui tapé, sans un mot d'explication.
+          if (lireDureeSaisie(saisie) !== undefined || saisie === '') {
+            setSaisie(canonique)
+          }
         }}
         onChange={(evenement) => {
           const chiffres = evenement.target.value.replace(/\D/g, '').slice(0, 6)
@@ -84,6 +88,21 @@ function LectureDuree({ saisie }: { readonly saisie: string }): React.JSX.Elemen
 
   const lue = lireDureeSaisie(saisie)
   if (lue === undefined) {
+    // Les deux derniers chiffres sont toujours lus comme des minutes : au-delà
+    // de 59, aucune suite de chiffres ne peut rendre la saisie valide. Le dire
+    // évite de laisser croire que continuer à taper va résoudre le problème —
+    // c'est aussi la confusion la plus probable : une valeur recopiée telle
+    // quelle depuis une fiche de paie, où elle est écrite en centièmes.
+    const minutesTapees = saisie.length >= 2 ? Number(saisie.slice(-2)) : undefined
+    if (minutesTapees !== undefined && minutesTapees > 59) {
+      return (
+        <span className="field-consequence field-consequence--alerte">
+          {minutesTapees} ne peut pas être des minutes (jusqu’à 59 seulement). Si tu recopies un
+          nombre écrit en centièmes sur ta fiche, ce n’est pas ce format : « 151,67 » s’écrit
+          151 h 40 en heures et minutes.
+        </span>
+      )
+    }
     return (
       <span className="field-consequence">
         Continue : les deux derniers chiffres seront les minutes.
