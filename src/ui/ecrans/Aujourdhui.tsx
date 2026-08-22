@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import {
   decalerDate,
@@ -531,12 +531,29 @@ function EditeurSegment({
   readonly onSupprimer: () => void
   readonly onFermer: () => void
 }): React.JSX.Element | null {
+  const reference = useRef<HTMLDialogElement>(null)
+
+  useEffect(() => {
+    const element = reference.current
+    if (element !== null && !element.open) {
+      element.showModal()
+    }
+  }, [])
+
   if (segment === undefined) {
     return null
   }
 
   return (
-    <dialog className="dialog" open aria-label="Modifier le segment">
+    <dialog
+      className="dialog"
+      ref={reference}
+      aria-label="Modifier le segment"
+      onCancel={(evenement) => {
+        evenement.preventDefault()
+        onFermer()
+      }}
+    >
       <div className="dialog__corps">
         <h2 className="dialog__titre">{libelleType(segment.type)}</h2>
 
