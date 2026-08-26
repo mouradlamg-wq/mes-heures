@@ -27,6 +27,9 @@ import { ResultatDuree } from '../composants/Duree'
 import { TagStatut } from '../composants/Statut'
 import { CompteurDuMois } from './CompteurDuMois'
 
+/** Valeur de choix distincte de tout `TypeSegment` (CLAUDE.md §15). */
+const RETIRER_QUALIFICATION = 'retirer-qualification'
+
 /**
  * Écran « Aujourd'hui » — la saisie (DESIGN §8).
  *
@@ -188,6 +191,27 @@ export function Aujourdhui({
       fin: zoneAQualifier.fin,
       type,
     })
+    setZoneAQualifier(undefined)
+  }
+
+  /**
+   * Retire toute qualification manuelle qui **chevauche** cette tranche — pas
+   * seulement celle qui la couvre exactement. Une qualification posée sur toute
+   * l'amplitude (avant même d'avoir posé un segment) se fragmente à l'affichage
+   * dès qu'un segment vient la recouper : la tranche tapée ne correspond alors
+   * plus aux bornes enregistrées. Sans ce chevauchement, retirer restait sans
+   * effet sur les fragments, et l'utilisateur restait bloqué.
+   */
+  const retirerQualification = (): void => {
+    if (zoneAQualifier === undefined) {
+      return
+    }
+    const aRetirer = qualifications.filter(
+      (q) => q.debut < zoneAQualifier.fin && q.fin > zoneAQualifier.debut,
+    )
+    for (const qualification of aRetirer) {
+      void repo.supprimerQualification(qualification.id)
+    }
     setZoneAQualifier(undefined)
   }
 
@@ -489,8 +513,23 @@ export function Aujourdhui({
         <DialogueChoix
           titre="C'était quoi, ce moment ?"
           texte={`${heureMuraleDe(zoneAQualifier.debut, zone)} → ${heureMuraleDe(zoneAQualifier.fin, zone)}, ${formatDuree(zoneAQualifier.duree).sexagesimal}. L'app ne le devine pas.`}
-          choix={TYPES_SEGMENT.map((type) => ({ valeur: type, libelle: libelleType(type) }))}
+          choix={[
+            ...TYPES_SEGMENT.map((type) => ({ valeur: type, libelle: libelleType(type) })),
+            // Qualifier toute l'amplitude d'un coup (avant même d'avoir posé un
+            // segment) est un geste courant et sans issue : sans ce choix, rien
+            // ne permet de revenir en arrière pour poser des segments distincts
+            // sur la même plage.
+            ...(qualifications.some(
+              (q) => q.debut < zoneAQualifier.fin && q.fin > zoneAQualifier.debut,
+            )
+              ? [{ valeur: RETIRER_QUALIFICATION, libelle: 'Retirer — remettre en non qualifié' }]
+              : []),
+          ]}
           onChoisir={(valeur) => {
+            if (valeur === RETIRER_QUALIFICATION) {
+              retirerQualification()
+              return
+            }
             qualifier(valeur as TypeSegment)
           }}
           onAnnuler={() => {
@@ -533,12 +572,17 @@ function EditeurSegment({
 }): React.JSX.Element | null {
   const reference = useRef<HTMLDialogElement>(null)
 
+  // Juste après sa création, le segment n'existe pas encore dans `jourOuVide`
+  // (l'écriture Dexie est asynchrone) : ce composant peut donc d'abord monter
+  // avec `segment === undefined`, sans rendre le `<dialog>` — la ref reste
+  // `null` et un effet qui ne dépendrait que du montage manquerait l'ouverture.
+  // On rouvre donc à chaque fois que l'identité du segment édité change.
   useEffect(() => {
     const element = reference.current
     if (element !== null && !element.open) {
       element.showModal()
     }
-  }, [])
+  }, [segment?.id])
 
   if (segment === undefined) {
     return null
