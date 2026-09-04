@@ -10,6 +10,12 @@ import { VitePWA } from 'vite-plugin-pwa'
 process.env['TZ'] = 'America/New_York'
 
 export default defineConfig({
+  // Relatif plutôt que `/` : l'app est servie tantôt à la racine (`pnpm
+  // preview`, installation par USB, cf. README), tantôt depuis le sous-chemin
+  // d'un projet GitHub Pages (`/mes-heures/`). Sans routeur ni lien profond
+  // (App.tsx — navigation par état, pas par URL), un chemin relatif fonctionne
+  // dans les deux cas sans configuration séparée par cible.
+  base: './',
   plugins: [
     react(),
     VitePWA({
@@ -26,7 +32,8 @@ export default defineConfig({
         description:
           'Suivi des heures et vérification de fiche de paie. Fonctionne hors ligne, sans compte.',
         lang: 'fr',
-        start_url: '/',
+        start_url: '.',
+        scope: '.',
         display: 'standalone',
         // Écran de démarrage : le fond de l'app en clair, pas la couleur de marque.
         background_color: '#f2efec',

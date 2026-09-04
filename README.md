@@ -98,7 +98,25 @@ pnpm dev · pnpm test · pnpm typecheck · pnpm lint · pnpm build · pnpm previ
 pnpm verify   # typecheck + lint + test + build
 ```
 
-## Installer sur Android sans rien mettre en ligne
+## Installer
+
+### Depuis GitHub Pages (le plus simple)
+
+Chaque push sur `main` reconstruit l'app et la publie automatiquement
+([.github/workflows/deploy.yml](.github/workflows/deploy.yml)) sur :
+
+**<https://mouradlamg-wq.github.io/mes-heures/>**
+
+Ouvre ce lien sur le téléphone (n'importe quel réseau) → menu ⋮ → **Installer
+l'application**. Une fois installée, l'app fonctionne sans réseau ; les mises à jour ne
+s'appliquent jamais en silence (`registerType: 'prompt'`) — un bandeau propose de les
+appliquer, jamais au milieu d'une saisie.
+
+`dist/` n'est jamais commité : c'est ce seul workflow qui construit et publie ce qui est
+servi sur ce lien. Rien n'est envoyé nulle part au runtime — la page publiée reste la même
+app 100 % locale, juste téléchargée une fois depuis GitHub Pages au lieu d'un `pnpm preview`.
+
+### Sans rien mettre en ligne (Android, par USB)
 
 Chrome n'installe une PWA que depuis une origine sécurisée — HTTPS, ou `localhost`. Le
 transfert de port permet d'obtenir la seconde sans rien publier.
